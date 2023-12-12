@@ -27,7 +27,7 @@ public class MatiereServiceImpl implements IMatiereService {
 
         String uploadDir="C:\\Users\\saifa\\OneDrive\\Desktop\\fassarlyBack\\fassarlyBack\\src\\main\\resources\\uploads";
 
-        String uploadDirMatiere=uploadDir+"\\"+matiere.getNomMatiere();
+        String uploadDirMatiere=uploadDir+"\\matieres\\"+matiere.getNomMatiere();
         // Upload the image and set the path in the matiere object
         String fileName = FileUpload.saveFile(uploadDirMatiere,imageFile);
         matiere.setPhoto(fileName);

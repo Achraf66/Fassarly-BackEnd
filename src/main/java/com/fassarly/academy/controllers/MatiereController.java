@@ -11,12 +11,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 @Validated
 @RestController
 @RequestMapping("/api/matiere")
 @AllArgsConstructor
+@CrossOrigin("http://localhost:4200/")
 public class MatiereController {
 
     MatiereServiceImpl matiereService;
@@ -103,14 +105,19 @@ public class MatiereController {
     @GetMapping("/getMatiereByNom/{nomMatiere}")
     public ResponseEntity<?> readMatiereByNom(@PathVariable String nomMatiere) {
         try {
+            List matieresfounds = new ArrayList();
             Matiere matiere = matiereService.findByNomMatiere(nomMatiere);
             if (matiere != null) {
-                return ResponseEntity.ok(matiere);
+                matieresfounds.add(matiere);
+                return ResponseEntity.ok(matieresfounds);
             } else {
-                return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"No Matiere found for the given nomMatiere.\"}");
+                return ResponseEntity.ok(matieresfounds);
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"Une erreur s'est produite.\"}");
         }
     }
+
+
+
 }
