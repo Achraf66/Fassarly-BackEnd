@@ -27,7 +27,7 @@ public class ImageController {
 
     @GetMapping("/matiereimage/{matiereName}/{filename:.+}")
     public ResponseEntity<Resource> serveFile(@PathVariable String matiereName, @PathVariable String filename) {
-        Path filePath = Paths.get(uploadDirectory, matiereName).resolve(filename);
+        Path filePath = Paths.get(uploadDirectory+"\\matieres", matiereName).resolve(filename);
         try {
             Resource file = new UrlResource(filePath.toUri());
             MediaType mediaType = determineMediaType(filename);

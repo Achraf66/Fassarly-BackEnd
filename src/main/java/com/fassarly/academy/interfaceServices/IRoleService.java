@@ -1,19 +1,23 @@
 package com.fassarly.academy.interfaceServices;
 
-import com.fassarly.academy.entities.Role;
+import com.fassarly.academy.entities.UserRole;
+import lombok.AllArgsConstructor;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IRoleService {
     //-----------------------------------CRUD begins-----------------------------------//
-    public Role createRole(Role role);
+    public UserRole createRole(UserRole role);
 
-    public List<Role> readAllRole();
+    public List<UserRole> readAllRole();
 
-    public Role readRole(Long id);
+    public UserRole readRole(Long id);
 
-    public Role updateRole(Role role);
+    public UserRole updateRole(UserRole role);
 
     public void  deleteRole(Long id);
     //-----------------------------------CRUD ends-----------------------------------//
+
+    public Optional<UserRole> findbyid(Long idrole);
 }

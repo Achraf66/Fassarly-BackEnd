@@ -1,5 +1,6 @@
 package com.fassarly.academy.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -25,6 +26,7 @@ public class Matiere implements Serializable {
 
 
     //relations
+    @JsonIgnore
     @OneToMany
     List<Comptabilite> comptabilites;
 

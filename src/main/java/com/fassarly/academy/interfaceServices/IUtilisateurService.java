@@ -1,19 +1,19 @@
 package com.fassarly.academy.interfaceServices;
 
 
-import com.fassarly.academy.entities.Utilisateur;
+import com.fassarly.academy.entities.AppUser;
 
 import java.util.List;
 
 public interface IUtilisateurService {
     //-----------------------------------CRUD begins-----------------------------------//
-    public Utilisateur createUtilisateur(Utilisateur utilisateur);
+    public AppUser createUtilisateur(AppUser appUser);
 
-    public List<Utilisateur> readAllUtilisateur();
+    public List<AppUser> readAllUtilisateur();
 
-    public Utilisateur readUtilisateur(Long id);
+    public AppUser readUtilisateur(Long id);
 
-    public Utilisateur updateUtilisateur(Utilisateur utilisateur);
+    public AppUser updateUtilisateur(AppUser appUser);
 
     public void  deleteUtilisateur(Long id);
     //-----------------------------------CRUD ends-----------------------------------//

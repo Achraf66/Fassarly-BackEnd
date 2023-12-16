@@ -1,10 +1,8 @@
 package com.fassarly.academy.controllers;
 
-import com.fassarly.academy.entities.Utilisateur;
+import com.fassarly.academy.entities.AppUser;
 import com.fassarly.academy.services.UtilisateurServiceImpl;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,9 +19,9 @@ public class UtilisateurController {
 
     // Create Utilisateur
     @PostMapping("/addUtilisateur")
-    public ResponseEntity<String> createUtilisateur(@RequestBody Utilisateur utilisateur) {
+    public ResponseEntity<String> createUtilisateur(@RequestBody AppUser appUser) {
         try {
-            Utilisateur createdUtilisateur = utilisateurService.createUtilisateur(utilisateur);
+            AppUser createdAppUser = utilisateurService.createUtilisateur(appUser);
             return ResponseEntity.status(HttpStatus.OK).body("{\"message\": \"Utilisateur créé avec succès\"}");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"Une erreur s'est produite\"}");
@@ -36,8 +34,8 @@ public class UtilisateurController {
     @GetMapping("/getAllUtilisateurs")
     public ResponseEntity<?> readAllUtilisateurs() {
         try {
-            List<Utilisateur> allUtilisateurs = utilisateurService.readAllUtilisateur();
-            return ResponseEntity.ok(allUtilisateurs);
+            List<AppUser> allAppUsers = utilisateurService.readAllUtilisateur();
+            return ResponseEntity.ok(allAppUsers);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"Une erreur s'est produite.\"}");
         }
@@ -47,9 +45,9 @@ public class UtilisateurController {
     @GetMapping("/getUtilisateur/{id}")
     public ResponseEntity<?> readUtilisateur(@PathVariable Long id) {
         try {
-            Utilisateur utilisateur = utilisateurService.readUtilisateur(id);
-            if (utilisateur != null) {
-                return ResponseEntity.ok(utilisateur);
+            AppUser appUser = utilisateurService.readUtilisateur(id);
+            if (appUser != null) {
+                return ResponseEntity.ok(appUser);
             } else {
                 return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"No Utilisateur found.\"}");
             }
@@ -60,10 +58,10 @@ public class UtilisateurController {
 
     // Update Utilisateur
     @PutMapping("/updateUtilisateur")
-    public ResponseEntity<String> updateUtilisateur(@RequestBody Utilisateur utilisateur) {
+    public ResponseEntity<String> updateUtilisateur(@RequestBody AppUser appUser) {
         try {
-            Utilisateur updatedUtilisateur = utilisateurService.updateUtilisateur(utilisateur);
-            if (updatedUtilisateur != null) {
+            AppUser updatedAppUser = utilisateurService.updateUtilisateur(appUser);
+            if (updatedAppUser != null) {
                 return ResponseEntity.status(HttpStatus.OK).body("{\"message\": \"Utilisateur mis à jour avec succès\"}");
             } else {
                 return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"No Utilisateur found.\"}");

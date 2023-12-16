@@ -22,4 +22,6 @@ public interface IMatiereService {
 
     //------------Rechercher Matiere par nom------------//
     public Matiere findByNomMatiere(String nomMatiere);
+
+    public List<Matiere> findMatiereByUser(String numtel);
 }

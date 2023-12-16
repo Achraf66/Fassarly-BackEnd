@@ -6,8 +6,8 @@ import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
 
-@Getter
-@Setter
+@Builder
+@Data
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,8 +26,8 @@ public class Comptabilite implements Serializable {
 
     //relations
     @ManyToOne
-    @JoinColumn(name = "utilisateur_id") //Foreign Key
-    Utilisateur utilisateur;
+    @JoinColumn(name = "appuser_id")
+    private AppUser appUser;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "matiere_id") //Foreign Key

@@ -1,11 +1,15 @@
 package com.fassarly.academy.entities;
 
+import com.fassarly.academy.token.Token;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -14,16 +18,19 @@ import java.util.List;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-public class Utilisateur implements Serializable {
+@Builder
+public class AppUser implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
     String nomPrenom;
 
+    @Column(unique = true)
     String numeroTel;
 
-    String mdp;
+    @JsonIgnore
+    String password;
 
     String photo;
 
@@ -31,11 +38,15 @@ public class Utilisateur implements Serializable {
     @OneToOne(fetch = FetchType.LAZY)
     Abonnement abonnement;
 
-    @ManyToMany
-    List<Role> roles;
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Set<UserRole> roles = new HashSet<>();
 
+
+    @JsonIgnore
     @OneToMany
     List<Comptabilite> comptabilites;
 
+    @OneToMany(mappedBy = "user")
+    private List<Token> tokens;
 
 }

@@ -84,4 +84,12 @@ public class ComptabiliteController {
     }
 
     //-----------------------------------CRUD ends-----------------------------------//
+
+
+    @PostMapping("createAndAffectComtabiliteToUser")
+    public ResponseEntity<String> createAndAffectComtabiliteToUser
+            (@RequestParam("paye") float paye,@RequestParam("nonPaye") float nonPaye,@RequestParam("idUser")Long idUser ,@RequestParam("idMatiere") Long idMatiere)
+    {
+        return  ResponseEntity.status(HttpStatus.OK).body(comptabiliteService.createAndAffectComptabiliteToUser(paye,nonPaye,idUser,idMatiere));
+    }
 }

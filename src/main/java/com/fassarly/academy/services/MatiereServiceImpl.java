@@ -2,6 +2,7 @@ package com.fassarly.academy.services;
 
 import com.fassarly.academy.entities.Matiere;
 import com.fassarly.academy.interfaceServices.IMatiereService;
+import com.fassarly.academy.repositories.AppUserRepository;
 import com.fassarly.academy.repositories.MatiereRepository;
 import com.fassarly.academy.utils.FileUpload;
 import jakarta.transaction.Transactional;
@@ -19,6 +20,8 @@ public class MatiereServiceImpl implements IMatiereService {
     MatiereRepository matiereRepository;
 
     ImageUploadService imageUploadService;
+
+    AppUserRepository appUserRepository;
 
 
     @Override
@@ -60,4 +63,10 @@ public class MatiereServiceImpl implements IMatiereService {
     public Matiere findByNomMatiere(String nomMatiere) {
         return matiereRepository.findByNomMatiere(nomMatiere);
     }
+
+
+    public List<Matiere> findMatiereByUser(String numtel){
+    return matiereRepository.findByComptabilites_AppUser_NumeroTel(numtel);
+    }
+
 }

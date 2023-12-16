@@ -6,9 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
-import java.sql.Time;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Getter
 @Setter

@@ -33,17 +33,17 @@ public class MatiereController {
 
 
             if (!Objects.requireNonNull(file.getContentType()).startsWith("image/")) {
-                return ResponseEntity.status(HttpStatus.OK).body("{\"message\": \"Only image files are allowed\"}");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"message\": \"Only image files are allowed\"}");
             }
 
             Matiere createdMatiere = matiereService.createMatiere(matiere, file);
             return ResponseEntity.status(HttpStatus.OK).body("{\"message\": \"Matiere créée avec succès\"}");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"Une erreur s'est produite\"}");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Une erreur s'est produite\"}");
         } catch (MaxUploadSizeExceededException e) {
-            return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"Image too large\"}");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Image too large\"}");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"Une erreur s'est produite\"}");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Une erreur s'est produite\"}");
         }
     }
 
@@ -114,10 +114,17 @@ public class MatiereController {
                 return ResponseEntity.ok(matieresfounds);
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"Une erreur s'est produite.\"}");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Une erreur s'est produite.\"}");
         }
+    }
+
+    @GetMapping("/findMatiereByUser/{numtel}")
+    public ResponseEntity<List<Matiere>> findMatiereByUser(@PathVariable("numtel") String numtel) {
+
+        return ResponseEntity.ok(matiereService.findMatiereByUser(numtel));
+
     }
 
 
 
-}
+    }

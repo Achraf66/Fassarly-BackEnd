@@ -3,8 +3,8 @@ package com.fassarly.academy.controllers;
 import com.fassarly.academy.entities.Theme;
 import com.fassarly.academy.services.ThemeServiceImpl;
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
