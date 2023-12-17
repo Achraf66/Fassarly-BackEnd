@@ -35,6 +35,7 @@ public class AppUser implements Serializable {
     String photo;
 
     //relations
+    @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY)
     Abonnement abonnement;
 
@@ -46,6 +47,8 @@ public class AppUser implements Serializable {
     @OneToMany
     List<Comptabilite> comptabilites;
 
+
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Token> tokens;
 
