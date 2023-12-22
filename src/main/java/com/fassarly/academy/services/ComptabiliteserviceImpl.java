@@ -12,6 +12,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+
 @Service
 @AllArgsConstructor
 public class ComptabiliteserviceImpl implements IComptabiliteService {
@@ -41,7 +43,12 @@ public class ComptabiliteserviceImpl implements IComptabiliteService {
 
     @Override
     public void deleteComptabilite(Long id) {
-     comptabiliteRepository.deleteById(id);
+        Optional<Comptabilite> comptabiliteOptional = comptabiliteRepository.findById(id);
+
+        comptabiliteOptional.ifPresent(comptabilite -> {
+            comptabilite.setAppUser(null);
+            comptabiliteRepository.delete(comptabilite);
+        });
     }
 
     @Transactional

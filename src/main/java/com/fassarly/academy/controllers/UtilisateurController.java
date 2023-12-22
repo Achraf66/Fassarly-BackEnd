@@ -1,6 +1,8 @@
 package com.fassarly.academy.controllers;
 
+import com.fassarly.academy.DTO.ComptabiliteDTO;
 import com.fassarly.academy.entities.AppUser;
+import com.fassarly.academy.entities.Comptabilite;
 import com.fassarly.academy.services.UtilisateurServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,7 @@ import java.util.List;
 public class UtilisateurController {
 
     UtilisateurServiceImpl utilisateurService;
+
 
     //-----------------------------------CRUD begins-----------------------------------//
 
@@ -84,5 +87,30 @@ public class UtilisateurController {
     }
 
     //-----------------------------------CRUD ends-----------------------------------//
+
+
+    @GetMapping("/getComptabilitesByUserId/{userId}")
+    public ResponseEntity<List<ComptabiliteDTO>> getComptabilitesByUserId(@PathVariable Long userId) {
+        List<ComptabiliteDTO> comptabilites = utilisateurService.getComptabilitesByUserId(userId);
+
+        if (!comptabilites.isEmpty()) {
+            return ResponseEntity.ok(comptabilites);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 

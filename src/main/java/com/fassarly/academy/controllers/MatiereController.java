@@ -2,19 +2,18 @@ package com.fassarly.academy.controllers;
 
 import com.fassarly.academy.entities.Matiere;
 import com.fassarly.academy.services.MatiereServiceImpl;
-import jakarta.validation.constraints.Size;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.io.IOException;
+import java.util.*;
+
 @Validated
 @RestController
 @RequestMapping("/api/matiere")
@@ -28,19 +27,14 @@ public class MatiereController {
 
     // Create Matiere with image upload
     @PostMapping(value = "/addMatiere")
-    public ResponseEntity<String> createMatiere(@RequestPart("matiere") Matiere matiere,@RequestPart("file") @Size(max = 3 * 1024 * 1024, message = "File size must not exceed 5MB") MultipartFile file
-    ) {
+    public ResponseEntity<String> createMatiere
+    (@RequestParam("nomMatiere") String nomMatiere,@RequestParam("file") MultipartFile file) {
         try {
-
-
             if (!Objects.requireNonNull(file.getContentType()).startsWith("image/")) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"message\": \"Only image files are allowed\"}");
             }
-
-            Matiere createdMatiere = matiereService.createMatiere(matiere, file);
+            matiereService.createMatiere(nomMatiere, file);
             return ResponseEntity.status(HttpStatus.OK).body("{\"message\": \"Matiere créée avec succès\"}");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Une erreur s'est produite\"}");
         } catch (MaxUploadSizeExceededException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Image too large\"}");
         } catch (Exception e) {
@@ -75,19 +69,19 @@ public class MatiereController {
     }
 
     // Update Matiere
-    @PutMapping("/updateMatiere")
-    public ResponseEntity<String> updateMatiere(@RequestBody Matiere matiere) {
-        try {
-            Matiere updatedMatiere = matiereService.updateMatiere(matiere);
-            if (updatedMatiere != null) {
-                return ResponseEntity.status(HttpStatus.OK).body("{\"message\": \"Matiere mise à jour avec succès\"}");
-            } else {
-                return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"No Matiere found.\"}");
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"Une erreur s'est produite.\"}");
-        }
-    }
+//    @PutMapping("/updateMatiere")
+//    public ResponseEntity<String> updateMatiere(@RequestBody Matiere matiere) {
+//        try {
+//            Matiere updatedMatiere = matiereService.updateMatiere(matiere);
+//            if (updatedMatiere != null) {
+//                return ResponseEntity.status(HttpStatus.OK).body("{\"message\": \"Matiere mise à jour avec succès\"}");
+//            } else {
+//                return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"No Matiere found.\"}");
+//            }
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"Une erreur s'est produite.\"}");
+//        }
+//    }
 
     // Delete Matiere by ID
     @DeleteMapping("/removeMatiere/{id}")
@@ -127,5 +121,39 @@ public class MatiereController {
     }
 
 
-
+    @PutMapping("/updateMatiere/{matiereId}")
+    public ResponseEntity<Map<String, String>> updateMatiere(
+            @PathVariable Long matiereId,
+            @RequestParam String nomMatiere,
+            @RequestParam(required = false) MultipartFile file) {
+        try {
+            Matiere updatedMatiere = matiereService.updateMatiere(matiereId, nomMatiere, file);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Matiere updated successfully");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (EntityNotFoundException e) {
+            Map<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } catch (IOException e) {
+            Map<String, String> response = new HashMap<>();
+            response.put("error", "Error updating Matiere");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}

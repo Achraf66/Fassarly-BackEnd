@@ -1,17 +1,20 @@
 package com.fassarly.academy.services;
 
 import com.fassarly.academy.DTO.AuthenticationResponse;
+import com.fassarly.academy.DTO.ComptabiliteDTO;
 import com.fassarly.academy.entities.AppUser;
+import com.fassarly.academy.entities.Comptabilite;
+import com.fassarly.academy.entities.Matiere;
 import com.fassarly.academy.entities.UserRole;
 import com.fassarly.academy.interfaceServices.IUtilisateurService;
 import com.fassarly.academy.repositories.AppUserRepository;
 import com.fassarly.academy.repositories.RoleRepository;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,6 +24,10 @@ public class UtilisateurServiceImpl implements IUtilisateurService {
     AppUserRepository appUserRepository;
 
     RoleRepository roleRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
 
     @Override
     public AppUser createUtilisateur(AppUser appUser) {
@@ -54,4 +61,14 @@ public class UtilisateurServiceImpl implements IUtilisateurService {
     public void deleteUtilisateur(Long id) {
         appUserRepository.deleteById(id);
     }
+
+    public List<ComptabiliteDTO> getComptabilitesByUserId(Long userId) {
+        return appUserRepository.findById(userId)
+                .map(AppUser::getComptabilites)
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(comptabilite -> modelMapper.map(comptabilite, ComptabiliteDTO.class))
+                .collect(Collectors.toList());
+    }
+
 }

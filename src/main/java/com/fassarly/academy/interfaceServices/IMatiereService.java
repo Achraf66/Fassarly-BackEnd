@@ -9,7 +9,7 @@ import java.util.List;
 public interface IMatiereService {
 
     //-----------------------------------CRUD begins-----------------------------------//
-    public Matiere createMatiere(Matiere matiere, MultipartFile imageFile) throws IOException;
+    public Matiere createMatiere(String nomMatiere, MultipartFile imageFile) throws IOException;
 
     public List<Matiere> readAllMatiere();
 

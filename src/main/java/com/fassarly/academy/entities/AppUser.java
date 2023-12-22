@@ -13,7 +13,6 @@ import java.util.Set;
 
 @Getter
 @Setter
-@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -43,8 +42,8 @@ public class AppUser implements Serializable {
     private Set<UserRole> roles = new HashSet<>();
 
 
+    @OneToMany(mappedBy = "appUser", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JsonIgnore
-    @OneToMany
     List<Comptabilite> comptabilites;
 
 

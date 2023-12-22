@@ -1,5 +1,8 @@
 package com.fassarly.academy.controllers;
 
+import com.fassarly.academy.entities.Matiere;
+import com.fassarly.academy.repositories.MatiereRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -20,6 +23,9 @@ import java.nio.file.Paths;
 public class ImageController {
 
 
+    @Autowired
+    MatiereRepository matiereRepository;
+
     @Value("${file.upload.directory}")
     private String uploadDirectory;
 
@@ -27,7 +33,10 @@ public class ImageController {
 
     @GetMapping("/matiereimage/{matiereName}/{filename:.+}")
     public ResponseEntity<Resource> serveFile(@PathVariable String matiereName, @PathVariable String filename) {
-        Path filePath = Paths.get(uploadDirectory+"\\matieres", matiereName).resolve(filename);
+
+        Matiere m = matiereRepository.findByNomMatiere(matiereName);
+
+        Path filePath = Paths.get(uploadDirectory+"\\matieres", m.getId().toString()).resolve(filename);
         try {
             Resource file = new UrlResource(filePath.toUri());
             MediaType mediaType = determineMediaType(filename);

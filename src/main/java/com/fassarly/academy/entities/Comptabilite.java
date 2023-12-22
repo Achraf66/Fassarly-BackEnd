@@ -8,7 +8,6 @@ import java.io.Serializable;
 
 @Builder
 @Data
-@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -29,7 +28,7 @@ public class Comptabilite implements Serializable {
     @JoinColumn(name = "appuser_id")
     private AppUser appUser;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "matiere_id") //Foreign Key
     Matiere matieres;
 }
