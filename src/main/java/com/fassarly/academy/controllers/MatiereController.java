@@ -68,21 +68,6 @@ public class MatiereController {
         }
     }
 
-    // Update Matiere
-//    @PutMapping("/updateMatiere")
-//    public ResponseEntity<String> updateMatiere(@RequestBody Matiere matiere) {
-//        try {
-//            Matiere updatedMatiere = matiereService.updateMatiere(matiere);
-//            if (updatedMatiere != null) {
-//                return ResponseEntity.status(HttpStatus.OK).body("{\"message\": \"Matiere mise à jour avec succès\"}");
-//            } else {
-//                return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"No Matiere found.\"}");
-//            }
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"Une erreur s'est produite.\"}");
-//        }
-//    }
-
     // Delete Matiere by ID
     @DeleteMapping("/removeMatiere/{id}")
     public ResponseEntity<String> deleteMatiere(@PathVariable Long id) {

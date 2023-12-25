@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/comptabilite")
@@ -87,9 +88,26 @@ public class ComptabiliteController {
 
 
     @PostMapping("createAndAffectComtabiliteToUser")
-    public ResponseEntity<String> createAndAffectComtabiliteToUser
+    public ResponseEntity<Map<String, String>>  createAndAffectComtabiliteToUser
             (@RequestParam("paye") float paye,@RequestParam("nonPaye") float nonPaye,@RequestParam("idUser")Long idUser ,@RequestParam("idMatiere") Long idMatiere)
     {
         return  ResponseEntity.status(HttpStatus.OK).body(comptabiliteService.createAndAffectComptabiliteToUser(paye,nonPaye,idUser,idMatiere));
+    }
+
+
+    @PutMapping("/edit/{idComptabilite}")
+    public ResponseEntity<Map<String, String>> editComptabilite(
+            @PathVariable Long idComptabilite,
+            @RequestParam float newPaye,
+            @RequestParam float newNonPaye,
+            @RequestParam Long newIdMatiere
+    ) {
+        Map<String, String> response = comptabiliteService.editComptabilite(idComptabilite, newPaye, newNonPaye, newIdMatiere);
+
+        if (response.containsKey("error")) {
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
