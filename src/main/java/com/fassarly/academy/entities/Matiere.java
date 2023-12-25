@@ -32,10 +32,8 @@ public class Matiere implements Serializable {
     @JsonIgnore
     List<Comptabilite> comptabilites;
 
-    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "matieres")
     List<Examen> examens;
-    @JsonIgnore
 
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "matieres")
     List<Theme> themes;

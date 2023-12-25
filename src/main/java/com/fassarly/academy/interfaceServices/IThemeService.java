@@ -2,6 +2,7 @@ package com.fassarly.academy.interfaceServices;
 
 
 import com.fassarly.academy.entities.Theme;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -20,4 +21,18 @@ public interface IThemeService {
 
     //------------Rechercher Theme par nom------------//
     public Theme findByNomTheme(String nomTheme);
+
+    //-----------------FindThemeByMatiereId(Long MatiereId--------//////
+    public List<Theme>findThemeByMatieresId(Long matiereId);
+
+    /*****************************Search Theme By Name******************/
+    List<Theme> findThemesSearchInMatiere(String searchTerm,Long matiereId);
+
+    /**************************Update Themename By Id*****************/
+    public Theme updateThemeNameById(String newThemeName , Long idTheme);
+
+    /******************************Find Theme By Id ********************/
+    public Theme findThemeById(Long idTheme);
+    /*******************Add theme and AFFECT To matiere****************/
+    public Theme addThemeAddaffectToMatiere(Long idMatiere, Theme newTheme);
 }

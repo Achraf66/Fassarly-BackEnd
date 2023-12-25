@@ -99,4 +99,47 @@ public class ThemeController {
             return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"Une erreur s'est produite.\"}");
         }
     }
-}
+
+    //--------------FindTheme ByMatiere ID----------------------/
+
+    @GetMapping("/findThemeByMatiereId/{matiereId}")
+    public ResponseEntity<?> findThemeByMatiereId(@PathVariable("matiereId") Long matiereId) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(themeService.findThemeByMatieresId(matiereId));
+
+    }
+
+    @GetMapping("/findThemesSearch/{searchTerm}/{matiereId}")
+    public ResponseEntity<List<Theme>> findThemesSearchInMatiere
+            (
+            @PathVariable("searchTerm") String searchTerm,
+            @PathVariable("matiereId") Long matiereId
+            ) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(themeService.findThemesSearchInMatiere(searchTerm,matiereId));
+
+    }
+
+    @PutMapping("/updateNameThemeById/{id}")
+    public ResponseEntity<Theme> updateThemeNameById(@PathVariable Long id, @RequestParam String newThemeName) {
+        Theme updatedTheme = themeService.updateThemeNameById(newThemeName, id);
+        return ResponseEntity.ok(updatedTheme);
+    }
+
+
+
+    @GetMapping("/findThemeById/{idTheme}")
+    public ResponseEntity<Theme> findThemeById(@PathVariable("idTheme") Long idTheme){
+
+        return ResponseEntity.status(HttpStatus.OK).body(themeService.findThemeById(idTheme));
+    }
+
+    @PostMapping("/addThemeToMatiere/{idMatiere}")
+    public ResponseEntity<Theme> addThemeToMatiere(@PathVariable Long idMatiere, @RequestBody Theme newTheme) {
+        Theme savedTheme = themeService.addThemeAddaffectToMatiere(idMatiere, newTheme);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedTheme);
+    }
+
+
+
+    }

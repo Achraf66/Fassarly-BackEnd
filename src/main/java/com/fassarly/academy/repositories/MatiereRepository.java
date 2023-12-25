@@ -11,4 +11,5 @@ public interface MatiereRepository extends JpaRepository<Matiere , Long> {
     Matiere findByNomMatiere(String nomMatiere);
     List<Matiere> findByComptabilites_AppUser_NumeroTel(String numeroTel);
 
+
 }

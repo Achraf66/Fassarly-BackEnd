@@ -1,5 +1,6 @@
 package com.fassarly.academy.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -22,6 +23,7 @@ public class Theme implements Serializable {
     String nomTheme;
 
     //relations
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     Matiere matieres;
 

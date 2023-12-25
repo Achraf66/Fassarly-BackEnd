@@ -2,7 +2,6 @@ package com.fassarly.academy.controllers;
 
 import com.fassarly.academy.DTO.ComptabiliteDTO;
 import com.fassarly.academy.entities.AppUser;
-import com.fassarly.academy.entities.Comptabilite;
 import com.fassarly.academy.services.UtilisateurServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -16,4 +16,7 @@ public interface IExamenService {
 
     public void  deleteExamen(Long id);
     //-----------------------------------CRUD ends-----------------------------------//
+
+    List<Examen> findExamenByMatieresId(Long matiereId);
+
 }

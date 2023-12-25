@@ -7,11 +7,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/examen")
+@RequestMapping("/api/examen/")
 @AllArgsConstructor
+@CrossOrigin("http://localhost:4200")
 public class ExamenController {
 
     ExamenServiceImpl examenService;
@@ -84,5 +86,16 @@ public class ExamenController {
     }
 
     //-----------------------------------CRUD ends-----------------------------------//
+
+
+    @GetMapping("findExamenByMatiereId/{matiereId}")
+    public ResponseEntity<List<Examen>> findExamenByMatiereId(@PathVariable("matiereId") Long matiereId) {
+        List<Examen> exams = examenService.findExamenByMatieresId(matiereId);
+
+
+            return ResponseEntity.ok(exams);
+
+    }
+
 }
 
