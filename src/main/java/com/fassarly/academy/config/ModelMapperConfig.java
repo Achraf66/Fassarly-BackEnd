@@ -11,4 +11,9 @@ public class ModelMapperConfig {
     public ModelMapper modelMapper() {
         return new ModelMapper();
     }
+
+    @Bean
+    public String someString() {
+        return "This is a String bean";
+    }
 }

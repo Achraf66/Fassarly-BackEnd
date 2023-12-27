@@ -18,10 +18,12 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/matiere")
 @AllArgsConstructor
+
 @CrossOrigin("http://localhost:4200/")
 public class MatiereController {
 
     MatiereServiceImpl matiereService;
+
 
     //-----------------------------------CRUD begins-----------------------------------//
 
@@ -126,16 +128,6 @@ public class MatiereController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -2,12 +2,15 @@ package com.fassarly.academy.controllers;
 
 import com.fassarly.academy.entities.Examen;
 import com.fassarly.academy.services.ExamenServiceImpl;
+import com.fassarly.academy.utils.FileUpload;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Collections;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -17,6 +20,7 @@ import java.util.List;
 public class ExamenController {
 
     ExamenServiceImpl examenService;
+
 
     //-----------------------------------CRUD begins-----------------------------------//
 
@@ -96,6 +100,31 @@ public class ExamenController {
             return ResponseEntity.ok(exams);
 
     }
+
+    @PostMapping("/create")
+    public ResponseEntity<Examen> createExamenAndAffectToMatiere(
+            @RequestParam("matiereId") Long matiereId,
+            @RequestParam("nomExamen") String nomExamen,
+            @RequestParam("videoLien") String videoLien,
+            @RequestParam  MultipartFile correctionFile,
+            @RequestParam List<MultipartFile> pieceJointes) {
+
+        try {
+            Examen examen = examenService.createExamenAndAffectToMatiere(
+                    matiereId,
+                    nomExamen,
+                    videoLien,
+                    correctionFile,
+                    pieceJointes
+            );
+            return ResponseEntity.ok(examen);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+
 
 }
 

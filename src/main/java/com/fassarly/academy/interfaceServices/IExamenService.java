@@ -1,7 +1,10 @@
 package com.fassarly.academy.interfaceServices;
 
 import com.fassarly.academy.entities.Examen;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface IExamenService {
@@ -18,5 +21,11 @@ public interface IExamenService {
     //-----------------------------------CRUD ends-----------------------------------//
 
     List<Examen> findExamenByMatieresId(Long matiereId);
+
+
+    public Examen createExamenAndAffectToMatiere(Long matiereId, String nomExamen,
+                                                 String videoLien,
+                                                 MultipartFile correctionFile,
+                                                 List<MultipartFile> pieceJointes) throws IOException ;
 
 }

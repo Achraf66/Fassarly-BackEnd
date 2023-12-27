@@ -1,5 +1,7 @@
 package com.fassarly.academy.utils;
 
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -9,6 +11,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
+@Service
+@AllArgsConstructor
 public class FileUpload {
 
     public static String saveFile(String uploadDir, MultipartFile multipartFile) throws IOException {
