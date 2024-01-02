@@ -9,11 +9,28 @@ import com.fassarly.academy.entities.UserRole;
 import com.fassarly.academy.interfaceServices.IUtilisateurService;
 import com.fassarly.academy.repositories.AppUserRepository;
 import com.fassarly.academy.repositories.RoleRepository;
+import com.fassarly.academy.utils.FileUpload;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,6 +45,11 @@ public class UtilisateurServiceImpl implements IUtilisateurService {
     @Autowired
     private ModelMapper modelMapper;
 
+
+    private final PasswordEncoder passwordEncoder;
+
+    @Value("${file.upload.directory}")
+    private String uploadDirectory;
 
     @Override
     public AppUser createUtilisateur(AppUser appUser) {
@@ -70,5 +92,81 @@ public class UtilisateurServiceImpl implements IUtilisateurService {
                 .map(comptabilite -> modelMapper.map(comptabilite, ComptabiliteDTO.class))
                 .collect(Collectors.toList());
     }
+
+
+    public AppUser updateUserById(
+            Long userId, String password, String nomPrenom, String numeroTel,
+            MultipartFile photoFile, Long roleId
+    ) throws IOException {
+        Optional<AppUser> appUserOptional = appUserRepository.findById(userId);
+
+        if (appUserOptional.isEmpty()) {
+            return null;
+        }
+
+        AppUser appUser = appUserOptional.get();
+        appUser.setNomPrenom(nomPrenom);
+        appUser.setNumeroTel(numeroTel);
+
+        // If roleId is provided, update the user's role
+        if (roleId != null) {
+            // Find the UserRole based on roleId
+            Optional<UserRole> roleOptional = roleRepository.findById(roleId);
+
+            // Check if the role exists
+            if (roleOptional.isPresent()) {
+                // Create a new HashSet and add the found role
+                Set<UserRole> updatedRoles = new HashSet<>();
+                updatedRoles.add(roleOptional.get());
+
+                // Set the user's roles to the new set
+                appUser.setRoles(updatedRoles);
+            } else {
+                // Handle the case where the specified role does not exist
+                // You can throw an exception, log an error, or handle it based on your requirements
+                throw new RuntimeException("Role with ID " + roleId + " not found");
+            }
+        }
+
+        // Update password if provided
+        if (password != null) {
+            appUser.setPassword(passwordEncoder.encode(password));
+        }
+
+        // Update photo if provided
+        if (photoFile != null) {
+            // Check if the user has an existing photo
+            if (appUser.getPhoto() != null && !appUser.getPhoto().isEmpty()) {
+                // Delete the existing photo
+                String userFolderImagePath = uploadDirectory + "/Users/" + appUser.getId();
+                File existingPhoto = new File(userFolderImagePath, appUser.getPhoto());
+                if (existingPhoto.exists()) {
+                    existingPhoto.delete();
+                }
+            }
+
+            // Save the new photo
+            String userFolderImagePath = uploadDirectory + "/Users/" + appUser.getId();
+            String userPhotoName = FileUpload.saveFile(userFolderImagePath, photoFile);
+            appUser.setPhoto(userPhotoName);
+        }
+
+
+        return appUserRepository.save(appUser);
+    }
+
+
+
+    public List<AppUser> searchUsers(String searchterm) {
+        return appUserRepository.findByNomPrenomContainingIgnoreCaseOrNumeroTelContainingIgnoreCaseOrRolesDisplayNameContainingIgnoreCase(searchterm, searchterm, searchterm);
+    }
+
+
+
+
+
+
+
+
 
 }

@@ -13,6 +13,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/comptabilite")
 @AllArgsConstructor
+@CrossOrigin("http://localhost:4200/")
 public class ComptabiliteController {
 
     ComptabiliteserviceImpl comptabiliteService;

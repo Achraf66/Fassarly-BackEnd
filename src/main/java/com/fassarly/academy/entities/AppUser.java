@@ -38,7 +38,7 @@ public class AppUser implements Serializable {
     @OneToOne(fetch = FetchType.LAZY)
     Abonnement abonnement;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<UserRole> roles = new HashSet<>();
 
 
@@ -48,7 +48,7 @@ public class AppUser implements Serializable {
 
 
     @JsonIgnore
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user" , cascade = CascadeType.REMOVE)
     private List<Token> tokens;
 
 }

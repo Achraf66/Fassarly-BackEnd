@@ -20,7 +20,7 @@ public interface IExamenService {
     public void  deleteExamen(Long id);
     //-----------------------------------CRUD ends-----------------------------------//
 
-    List<Examen> findExamenByMatieresId(Long matiereId);
+    public List<Examen> findExamenByMatieresId(Long matiereId);
 
 
     public Examen createExamenAndAffectToMatiere(Long matiereId, String nomExamen,
@@ -28,4 +28,6 @@ public interface IExamenService {
                                                  MultipartFile correctionFile,
                                                  List<MultipartFile> pieceJointes) throws IOException ;
 
+    public Examen fetchExamenById(Long idExamen);
+    public Examen editExamen(Long examenId, String nomExamen, String videoLien, MultipartFile correctionFile, List<MultipartFile> pieceJointes) throws IOException;
 }

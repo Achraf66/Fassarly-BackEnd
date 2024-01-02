@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,8 +55,11 @@ public class ThemeServiceImpl implements IThemeService {
 
     @Override
     public List<Theme> findThemeByMatieresId(Long matiereId) {
-        return themeRepository.findThemeByMatieresId(matiereId);
+        List<Theme> themes = themeRepository.findThemeByMatieresId(matiereId);
+        themes.sort(Comparator.comparingLong(Theme::getId));
+        return themes;
     }
+
 
     @Override
     public List<Theme> findThemesSearchInMatiere(String searchTerm,Long matiereId) {

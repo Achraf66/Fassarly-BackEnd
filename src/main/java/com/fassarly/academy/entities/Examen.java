@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.io.Serializable;
 import java.util.List;
@@ -24,7 +27,8 @@ public class Examen implements Serializable {
     String nomExamen;
 
     @ElementCollection
-    @CollectionTable(name = "pieces_jointes", joinColumns = @JoinColumn(name = "id_entite"))
+    @CollectionTable(name = "pieces_jointes", joinColumns = @JoinColumn(name = "examen_id"))
+    @Column(name = "piece_jointe")
     private List<String> pieceJointes;
 
     String correction;
@@ -35,4 +39,9 @@ public class Examen implements Serializable {
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY) //Chercher en chatGpt ?
     Matiere matieres;
+
+
+
+
+
 }

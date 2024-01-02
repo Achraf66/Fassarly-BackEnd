@@ -7,8 +7,11 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
+
 @RestController
 @RequestMapping("/api/utilisateur")
 @AllArgsConstructor
@@ -104,12 +107,39 @@ public class UtilisateurController {
 
 
 
+    @PutMapping("/updateUserById/{userId}")
+    public ResponseEntity<AppUser> updateUser(
+            @PathVariable Long userId,
+            @RequestParam(required = false) String password,
+            @RequestParam String nomPrenom,
+            @RequestParam String numeroTel,
+            @RequestParam(required = false) MultipartFile photoFile,
+            @RequestParam(required = false) Long roleId){
+        try {
+            AppUser updatedUser = utilisateurService.updateUserById(userId, password, nomPrenom, numeroTel, photoFile,roleId);
+            if (updatedUser != null) {
+                return ResponseEntity.ok(updatedUser);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<AppUser>> searchUsers(@RequestParam("searchterm") String searchterm) {
+        List<AppUser> searchResults = utilisateurService.searchUsers(searchterm);
 
+        if (searchResults.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
-
+        return new ResponseEntity<>(searchResults, HttpStatus.OK);
+    }
 
 
 
 }
+
 
