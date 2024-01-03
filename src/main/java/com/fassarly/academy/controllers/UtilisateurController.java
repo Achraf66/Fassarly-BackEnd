@@ -138,7 +138,10 @@ public class UtilisateurController {
         return new ResponseEntity<>(searchResults, HttpStatus.OK);
     }
 
-
+    @GetMapping("/findByNumeroTel/{numTel}")
+    public AppUser findByNumeroTel(@PathVariable("numTel") String numTel){
+        return utilisateurService.findByNumeroTel(numTel);
+    }
 
 }
 

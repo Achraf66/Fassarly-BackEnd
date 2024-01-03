@@ -163,6 +163,11 @@ public class UtilisateurServiceImpl implements IUtilisateurService {
 
 
 
+    public AppUser findByNumeroTel (String numTel){
+       return appUserRepository.findByNumeroTel(numTel).orElse(null);
+    }
+
+
 
 
 

@@ -12,7 +12,7 @@ public interface AppUserRepository extends JpaRepository<AppUser, Long> {
 
 
     Optional<AppUser> findByNumeroTel(String numTel);
-    List<AppUser> findByNomPrenomContainingIgnoreCaseOrNumeroTelContainingIgnoreCaseOrRolesDisplayNameContainingIgnoreCase(String nomPrenom, String numeroTel, String displayName);
 
+    List<AppUser> findByNomPrenomContainingIgnoreCaseOrNumeroTelContainingIgnoreCaseOrRolesDisplayNameContainingIgnoreCase(String nomPrenom, String numeroTel, String displayName);
 
 }
