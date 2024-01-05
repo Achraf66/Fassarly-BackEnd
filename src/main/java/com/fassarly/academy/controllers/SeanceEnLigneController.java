@@ -12,6 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/seanceEnLigne")
 @AllArgsConstructor
+@CrossOrigin("http://localhost:4200/")
 public class SeanceEnLigneController {
 
     SeanceEnLigneServiceImpl seanceEnLigneService;
@@ -84,4 +85,45 @@ public class SeanceEnLigneController {
     }
 
     //-----------------------------------CRUD ends-----------------------------------//
+
+    @GetMapping("/getSessionLiveByMatiereId/{matiereId}")
+    public ResponseEntity<?> getSessionLiveByMatiereId(@PathVariable("matiereId") Long matiereId) {
+        try {
+            List<SeanceEnLigne> seanceEnLignes = seanceEnLigneService.getSessionLiveByMatiereId(matiereId);
+            if (seanceEnLignes != null) {
+                return ResponseEntity.ok(seanceEnLignes);
+            } else {
+                return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"No SeanceEnLigne found.\"}");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"Une erreur s'est produite.\"}");
+        }
+    }
+
+    @PostMapping("/createSeanceEnLigneAndAffectToMatiere/{matiereId}")
+        public ResponseEntity<?> createSeanceEnLigneAndAffectToMatiere(@PathVariable("matiereId") Long matiereId, @RequestBody SeanceEnLigne seanceEnLigne) {
+            try {
+                seanceEnLigneService.createSeanceEnLigneAndAffectToMatiere(matiereId, seanceEnLigne);
+                return ResponseEntity.status(HttpStatus.OK).body("{\"message\": \"SeanceEnLigne créée avec succès\"}");
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"Une erreur s'est produite\"}");
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"Une erreur s'est produite\"}");
+            }
+        }
+
+    @PutMapping("/editSeanceEnLigne/{seanceEnLigneId}")
+    public ResponseEntity<?> editSeanceEnLigne(@PathVariable("seanceEnLigneId") Long seanceEnLigneId, @RequestBody SeanceEnLigne seanceEnLigne) {
+        try {
+            seanceEnLigneService.editSeanceEnLigne(seanceEnLigneId, seanceEnLigne);
+            return ResponseEntity.status(HttpStatus.OK).body("{\"message\": \"SeanceEnLigne créée avec succès\"}");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"Une erreur s'est produite\"}");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"Une erreur s'est produite\"}");
+        }
+    }
+
+
+
 }

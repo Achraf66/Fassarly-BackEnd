@@ -31,8 +31,10 @@ public class Examen implements Serializable {
     @Column(name = "piece_jointe")
     private List<String> pieceJointes;
 
+    @Column(length = 1000)
     String correction;
 
+    @Column(length = 1000)
     String videoLien;
 
     //relations

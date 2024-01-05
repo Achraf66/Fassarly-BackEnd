@@ -16,4 +16,6 @@ public interface ISeanceEnLigneService {
 
     public void  deleteSeanceEnLigne(Long id);
     //-----------------------------------CRUD ends-----------------------------------//
+
+    public List<SeanceEnLigne> getSessionLiveByMatiereId(Long matiereId);
 }

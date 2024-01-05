@@ -22,6 +22,7 @@ public class Lesson implements Serializable {
 
     String nomLesson;
 
+    @Column(length = 1000)
     String videoLien;
 
     @Column(length = 1000)

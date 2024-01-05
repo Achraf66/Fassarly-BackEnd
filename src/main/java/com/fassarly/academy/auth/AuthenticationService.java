@@ -68,7 +68,7 @@ public class AuthenticationService {
             var savedUser = repository.save(user);
             var jwtToken = jwtService.GenerateToken(user.getNumeroTel());
             var refreshToken = jwtService.GenerateToken(user.getNumeroTel());
-            saveUserToken(savedUser, jwtToken);
+//            saveUserToken(savedUser, jwtToken);
 
             return AuthenticationResponse.builder()
                     .successmessage("Register Success")
