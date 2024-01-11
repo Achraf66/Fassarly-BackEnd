@@ -1,12 +1,8 @@
 package com.fassarly.academy.controllers;
 
-import com.fassarly.academy.entities.Matiere;
 import com.fassarly.academy.entities.UserRole;
-import com.fassarly.academy.interfaceServices.IRoleService;
-import com.fassarly.academy.services.MatiereServiceImpl;
 import com.fassarly.academy.services.RoleServiceImpl;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -19,7 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/roles")
 @AllArgsConstructor
-@CrossOrigin("http://localhost:4200/")
+@CrossOrigin("http://localhost:4200")
 public class RoleController {
 
 

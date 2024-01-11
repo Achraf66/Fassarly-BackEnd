@@ -7,11 +7,9 @@ import com.fassarly.academy.repositories.MatiereRepository;
 import com.fassarly.academy.repositories.SeanceEnLigneRepository;
 import io.jsonwebtoken.lang.Assert;
 import lombok.AllArgsConstructor;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;

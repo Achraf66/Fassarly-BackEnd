@@ -1,5 +1,6 @@
 package com.fassarly.academy.token;
 
+import com.fassarly.academy.entities.AppUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -16,4 +17,6 @@ public interface TokenRepository extends JpaRepository<Token, Integer> {
     List<Token> findAllValidTokenByUser(Integer id);
 
     Optional<Token> findByToken(String token);
+
+    List<Token> findTokenByUser(AppUser user);
 }

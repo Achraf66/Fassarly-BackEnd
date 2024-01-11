@@ -38,6 +38,29 @@ public class OfferServiceImpl {
         }
     }
 
+    public Offer createOrUpdateOffer(Offer offer) {
+        if (offer.getId() != null) {
+            return offerRepository.findById(offer.getId())
+                    .map(existingOffer -> {
+                        // If it exists, update the existing offer
+                        // Update fields you want to change
+                        existingOffer.setMensuelle(offer.getMensuelle());
+                        existingOffer.setTrimestrielle(offer.getTrimestrielle());
+                        existingOffer.setAnuelle(offer.getAnuelle());
+                        return offerRepository.save(existingOffer);
+                    })
+                    .orElseGet(() -> {
+                        // If it doesn't exist, create a new offer
+                        return offerRepository.save(offer);
+                    });
+        } else {
+            // If the ID is null, it's a new offer
+            return offerRepository.save(offer);
+        }
+    }
+
+
+
     public void deleteOffer(Long id) {
         offerRepository.deleteById(id);
     }

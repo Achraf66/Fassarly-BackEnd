@@ -1,7 +1,6 @@
 package com.fassarly.academy.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;

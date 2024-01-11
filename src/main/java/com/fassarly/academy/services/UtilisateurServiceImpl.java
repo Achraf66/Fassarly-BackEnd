@@ -1,10 +1,7 @@
 package com.fassarly.academy.services;
 
-import com.fassarly.academy.DTO.AuthenticationResponse;
 import com.fassarly.academy.DTO.ComptabiliteDTO;
 import com.fassarly.academy.entities.AppUser;
-import com.fassarly.academy.entities.Comptabilite;
-import com.fassarly.academy.entities.Matiere;
 import com.fassarly.academy.entities.UserRole;
 import com.fassarly.academy.interfaceServices.IUtilisateurService;
 import com.fassarly.academy.repositories.AppUserRepository;
@@ -14,23 +11,12 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 

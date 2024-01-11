@@ -1,6 +1,5 @@
 package com.fassarly.academy.controllers;
 
-import com.fassarly.academy.entities.Examen;
 import com.fassarly.academy.entities.Lesson;
 import com.fassarly.academy.services.LessonServiceImpl;
 import jakarta.transaction.Transactional;

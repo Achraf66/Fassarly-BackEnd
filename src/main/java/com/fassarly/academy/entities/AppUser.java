@@ -33,6 +33,10 @@ public class AppUser implements Serializable {
 
     String photo;
 
+    private String verificationCode;
+
+    private boolean isSmsVerified;
+
     //relations
     @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY)

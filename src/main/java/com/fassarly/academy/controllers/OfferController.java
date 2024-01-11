@@ -2,7 +2,6 @@ package com.fassarly.academy.controllers;
 
 import com.fassarly.academy.entities.Offer;
 import com.fassarly.academy.services.OfferServiceImpl;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,4 +45,16 @@ public class OfferController {
         offerService.deleteOffer(id);
         return ResponseEntity.noContent().build();
     }
+
+
+    @PostMapping("/createOrUpdateOffer")
+    public ResponseEntity<Offer> createOrUpdateOffer(@RequestBody Offer offer) {
+        Offer result = offerService.createOrUpdateOffer(offer);
+
+        // Adjust the response based on whether the offer was created or updated
+        HttpStatus responseStatus = (result.getId() != null) ? HttpStatus.OK : HttpStatus.CREATED;
+
+        return ResponseEntity.status(responseStatus).body(result);
+    }
+
 }

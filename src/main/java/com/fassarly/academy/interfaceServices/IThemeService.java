@@ -2,7 +2,6 @@ package com.fassarly.academy.interfaceServices;
 
 
 import com.fassarly.academy.entities.Theme;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 

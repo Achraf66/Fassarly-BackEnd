@@ -1,7 +1,10 @@
 package com.fassarly.academy.entities;
 
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -17,13 +20,12 @@ public class Offer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    String amout;
+    Float mensuelle;
 
-    @Column(length = 1000)
-    String coverLink;
+    Float trimestrielle;
 
-    @Column(length = 1000)
-    String description;
+    Float anuelle;
+
 
 
 }

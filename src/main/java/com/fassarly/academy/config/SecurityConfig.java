@@ -19,8 +19,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -60,19 +58,32 @@ public class SecurityConfig {
             http
                     .csrf(AbstractHttpConfigurer::disable)
                     .authorizeHttpRequests(req ->
-                            req.requestMatchers(WHITE_LIST_URL)
-                                    .permitAll()
-                                    .anyRequest()
-                                    .permitAll()
-                    )
-                    .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
-                    .authenticationProvider(authenticationProvider())
-                    .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                            req
+                                    // Permit access to certain URLs without authentication
+                                    .requestMatchers(WHITE_LIST_URL).permitAll()
+                                    // Additional antMatchers or requestMatchers can be added here
+                                    .requestMatchers("/api/v1/auth/**").permitAll()
+                                    .requestMatchers("/api/roles/getAllRoles").permitAll()
 
-            ;
+                                    .requestMatchers("/api/orange/**").permitAll()
+
+                                    // Allow any other request only if authenticated
+                                    .requestMatchers("/api/utilisateur/findByNumeroTel/**").authenticated()
+                                    .requestMatchers("/api/matiere/findMatiereByUser/**").authenticated()
+                                    .requestMatchers("/images/**").permitAll()
+                                    .requestMatchers("/download**").authenticated()
+                                    .requestMatchers("/api/offers/**").hasAnyAuthority(new String[]{"ADMIN"})
+
+
+                            .anyRequest().permitAll()
+                    )
+                    .sessionManagement(session -> session.maximumSessions(1))
+                    .authenticationProvider(authenticationProvider())
+                    .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
             return http.build();
         }
+
 
 
         @Bean

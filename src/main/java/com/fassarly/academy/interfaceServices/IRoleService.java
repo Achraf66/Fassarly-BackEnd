@@ -1,7 +1,6 @@
 package com.fassarly.academy.interfaceServices;
 
 import com.fassarly.academy.entities.UserRole;
-import lombok.AllArgsConstructor;
 
 import java.util.List;
 import java.util.Optional;

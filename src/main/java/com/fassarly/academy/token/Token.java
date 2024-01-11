@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -23,6 +25,8 @@ public class Token {
 
     @Enumerated(EnumType.STRING)
     public TokenType tokenType = TokenType.BEARER;
+
+    private Date expirationDate;
 
     public boolean revoked;
 
