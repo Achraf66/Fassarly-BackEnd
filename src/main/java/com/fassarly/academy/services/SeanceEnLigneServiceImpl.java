@@ -1,6 +1,8 @@
 package com.fassarly.academy.services;
 
+import com.fassarly.academy.entities.Examen;
 import com.fassarly.academy.entities.Matiere;
+import com.fassarly.academy.entities.PrototypeExam;
 import com.fassarly.academy.entities.SeanceEnLigne;
 import com.fassarly.academy.interfaceServices.ISeanceEnLigneService;
 import com.fassarly.academy.repositories.MatiereRepository;
@@ -138,7 +140,22 @@ public class SeanceEnLigneServiceImpl implements ISeanceEnLigneService {
 
 
 
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteSeanceEnLigneById(Long liveSessionId) {
+        SeanceEnLigne seanceEnLigne = seanceEnLigneRepository.findById(liveSessionId)
+                .orElseThrow(() -> new IllegalArgumentException("LiveSession not found with ID: " + liveSessionId));
 
+        // Delete associated folder
+        deleteFolder(uploadDirectory+"/seanceEnLigne/" + liveSessionId);
+
+        Matiere matiere = seanceEnLigne.getMatieres();
+        // Remove association from parent Examen
+        matiere.getSeanceEnLignes().remove(seanceEnLigne);
+        matiereRepository.save(matiere);
+
+        // Delete PrototypeExam entity
+        seanceEnLigneRepository.delete(seanceEnLigne);
+    }
 
 
 

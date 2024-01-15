@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/seanceEnLigne")
@@ -155,6 +157,24 @@ public class SeanceEnLigneController {
             return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"Une erreur s'est produite\"}");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"Une erreur s'est produite\"}");
+        }
+    }
+
+    @DeleteMapping("/deleteLiveSessinById/{liveSessionId}")
+    public ResponseEntity<?> deleteSeanceEnLigneById(@PathVariable Long liveSessionId) {
+        Map<String, String> response = new HashMap<>();
+
+        try {
+            seanceEnLigneService.deleteSeanceEnLigneById(liveSessionId);
+            response.put("successmessage", "LiveSession deleted successfully");
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            response.put("errormessage", e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            response.put("errormessage", "Internal Server Error");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
