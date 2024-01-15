@@ -108,19 +108,12 @@ public class ExamenController {
     @PostMapping("/create")
     public ResponseEntity<Examen> createExamenAndAffectToMatiere(
             @RequestParam("matiereId") Long matiereId,
-            @RequestParam("nomExamen") String nomExamen,
-            @RequestParam("videoLien") String videoLien,
-            @RequestParam  MultipartFile correctionFile,
-            @RequestParam List<MultipartFile> pieceJointes) {
+            @RequestParam("nomExamen") String nomExamen) {
 
         try {
             Examen examen = examenService.createExamenAndAffectToMatiere(
                     matiereId,
-                    nomExamen,
-                    videoLien,
-                    correctionFile,
-                    pieceJointes
-            );
+                    nomExamen);
             return ResponseEntity.ok(examen);
         } catch (IOException e) {
             e.printStackTrace();
@@ -137,12 +130,9 @@ public class ExamenController {
     @PutMapping("/edit/{examenId}")
     public ResponseEntity<Examen> editExamen(
             @PathVariable Long examenId,
-            @RequestParam String nomExamen,
-            @RequestParam String videoLien,
-            @RequestParam(required = false) MultipartFile correctionFile,
-            @RequestParam(required = false) List<MultipartFile> pieceJointes) {
+            @RequestParam String nomExamen) {
         try {
-            Examen updatedExamen = examenService.editExamen(examenId, nomExamen, videoLien, correctionFile, pieceJointes);
+            Examen updatedExamen = examenService.editExamen(examenId, nomExamen);
             return ResponseEntity.ok(updatedExamen);
         } catch (IOException e) {
             return ResponseEntity.status(500).body(null);
@@ -178,7 +168,11 @@ public class ExamenController {
     }
 
 
-
+    @GetMapping("/search")
+    public ResponseEntity<List<Examen>> searchExamens(@RequestParam String partialNomExamen) {
+        List<Examen> result = examenService.searchByPartialNomExamen(partialNomExamen);
+        return ResponseEntity.ok(result);
+    }
 
 }
 

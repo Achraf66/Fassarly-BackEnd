@@ -24,7 +24,7 @@ public class TokenCleanupTask {
         this.tokenRepository = tokenRepository;
     }
 
-    @Scheduled(fixedRate = 3600000) // Run every hour, adjust the rate as needed
+    @Scheduled(fixedRate = 3600) // Run every hour, adjust the rate as needed
     public void cleanupExpiredTokens() {
         // Get all tokens from the repository
         List<Token> allTokens = tokenRepository.findAll();

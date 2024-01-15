@@ -1,10 +1,16 @@
 package com.fassarly.academy.DTO;
 
+import com.fassarly.academy.entities.Comptabilite;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @JsonSerialize
 @Getter
@@ -17,5 +23,6 @@ public class AppUserDTO {
     private String nomPrenom;
     private String numeroTel;
     private String photo;
+    List<Comptabilite> comptabilites;
 
 }

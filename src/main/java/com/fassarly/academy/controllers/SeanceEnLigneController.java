@@ -6,7 +6,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -101,21 +103,25 @@ public class SeanceEnLigneController {
     }
 
     @PostMapping("/createSeanceEnLigneAndAffectToMatiere/{matiereId}")
-        public ResponseEntity<?> createSeanceEnLigneAndAffectToMatiere(@PathVariable("matiereId") Long matiereId, @RequestBody SeanceEnLigne seanceEnLigne) {
-            try {
-                seanceEnLigneService.createSeanceEnLigneAndAffectToMatiere(matiereId, seanceEnLigne);
-                return ResponseEntity.status(HttpStatus.OK).body("{\"message\": \"SeanceEnLigne créée avec succès\"}");
-            } catch (IllegalArgumentException e) {
-                return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"Une erreur s'est produite\"}");
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"Une erreur s'est produite\"}");
-            }
-        }
-
-    @PutMapping("/editSeanceEnLigne/{seanceEnLigneId}")
-    public ResponseEntity<?> editSeanceEnLigne(@PathVariable("seanceEnLigneId") Long seanceEnLigneId, @RequestBody SeanceEnLigne seanceEnLigne) {
+    public ResponseEntity<?> createSeanceEnLigneAndAffectToMatiere(
+            @PathVariable("matiereId") Long matiereId,
+            @RequestParam("date") LocalDateTime date,
+            @RequestParam("heureDebut") String heureDebut,
+            @RequestParam("heureFin") String heureFin,
+            @RequestParam("titre") String titre,
+            @RequestParam("lienZoom") String lienZoom,
+            @RequestParam(value = "homeWorkFile", required = false) MultipartFile homeWorkFile
+    ) {
         try {
-            seanceEnLigneService.editSeanceEnLigne(seanceEnLigneId, seanceEnLigne);
+            SeanceEnLigne seanceEnLigne = new SeanceEnLigne();
+            seanceEnLigne.setDate(date);
+            seanceEnLigne.setHeureDebut(heureDebut);
+            seanceEnLigne.setHeureFin(heureFin);
+            seanceEnLigne.setTitre(titre);
+            seanceEnLigne.setLienZoom(lienZoom);
+
+            SeanceEnLigne createdSeance = seanceEnLigneService.createSeanceEnLigneAndAffectToMatiere(matiereId, seanceEnLigne, homeWorkFile);
+
             return ResponseEntity.status(HttpStatus.OK).body("{\"message\": \"SeanceEnLigne créée avec succès\"}");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"Une erreur s'est produite\"}");
@@ -123,6 +129,35 @@ public class SeanceEnLigneController {
             return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"Une erreur s'est produite\"}");
         }
     }
+
+    @PutMapping("/editSeanceEnLigne/{seanceEnLigneId}")
+    public ResponseEntity<?> editSeanceEnLigne(
+            @PathVariable("seanceEnLigneId") Long seanceEnLigneId,
+            @RequestParam("date") LocalDateTime date,
+            @RequestParam("heureDebut") String heureDebut,
+            @RequestParam("heureFin") String heureFin,
+            @RequestParam("titre") String titre,
+            @RequestParam("lienZoom") String lienZoom,
+            @RequestParam(value = "homeWorkFile", required = false) MultipartFile homeWorkFile
+    ) {
+        try {
+            SeanceEnLigne seanceEnLigne = new SeanceEnLigne();
+            seanceEnLigne.setDate(date);
+            seanceEnLigne.setHeureDebut(heureDebut);
+            seanceEnLigne.setHeureFin(heureFin);
+            seanceEnLigne.setTitre(titre);
+            seanceEnLigne.setLienZoom(lienZoom);
+
+            SeanceEnLigne createdSeance = seanceEnLigneService.editSeanceEnLigne(seanceEnLigneId, seanceEnLigne, homeWorkFile);
+
+            return ResponseEntity.status(HttpStatus.OK).body("{\"message\": \"SeanceEnLigne créée avec succès\"}");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"Une erreur s'est produite\"}");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"Une erreur s'est produite\"}");
+        }
+    }
+
 
 
 

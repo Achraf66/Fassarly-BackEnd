@@ -22,11 +22,9 @@ public interface IExamenService {
     public List<Examen> findExamenByMatieresId(Long matiereId);
 
 
-    public Examen createExamenAndAffectToMatiere(Long matiereId, String nomExamen,
-                                                 String videoLien,
-                                                 MultipartFile correctionFile,
-                                                 List<MultipartFile> pieceJointes) throws IOException ;
+    public Examen createExamenAndAffectToMatiere(Long matiereId, String nomExamen ) throws IOException ;
+
 
     public Examen fetchExamenById(Long idExamen);
-    public Examen editExamen(Long examenId, String nomExamen, String videoLien, MultipartFile correctionFile, List<MultipartFile> pieceJointes) throws IOException;
+    public Examen editExamen(Long examenId, String nomExamen) throws IOException;
 }

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.format.annotation.DateTimeFormat;
+import javax.annotation.Nullable;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -34,6 +35,9 @@ public class SeanceEnLigne implements Serializable {
     String titre;
 
     String lienZoom;
+
+    @Nullable
+    String homeWorkFileName;
 
     //relations
     @JsonIgnore

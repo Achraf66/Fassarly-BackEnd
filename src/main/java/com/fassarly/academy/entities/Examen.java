@@ -23,22 +23,13 @@ public class Examen implements Serializable {
 
     String nomExamen;
 
-    @ElementCollection
-    @CollectionTable(name = "pieces_jointes", joinColumns = @JoinColumn(name = "examen_id"))
-    @Column(name = "piece_jointe")
-    private List<String> pieceJointes;
-
-    @Column(length = 1000)
-    String correction;
-
-    @Column(length = 1000)
-    String videoLien;
-
     //relations
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY) //Chercher en chatGpt ?
     Matiere matieres;
 
+    @OneToMany(mappedBy = "exam", cascade = CascadeType.ALL)
+    List<PrototypeExam> prototypeExams;
 
 
 

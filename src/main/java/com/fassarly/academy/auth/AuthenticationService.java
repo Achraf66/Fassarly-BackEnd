@@ -16,6 +16,7 @@ import com.fassarly.academy.token.TokenType;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -41,6 +42,8 @@ public class AuthenticationService {
     private static final String BAD_CREDENTIALS_MESSAGE = "Bad Credentials";
     private static final String USERNAME_NOT_FOUND_MESSAGE = "Username Not Found";
 
+    @Value("${application.security.jwt.expiration}")
+    private long jwtExpiration;
 
 
 
@@ -66,7 +69,7 @@ public class AuthenticationService {
             user.setVerificationCode(verificationCode);
             user.setSmsVerified(false);
 
-            //sendVerificationSms(user.getNumeroTel(), verificationCode);
+            sendVerificationSms(user.getNumeroTel(), verificationCode);
 
             repository.save(user);
 
@@ -175,7 +178,7 @@ public class AuthenticationService {
 
     private void saveUserToken(AppUser user, String jwtToken) {
         // Set the token expiration duration in milliseconds (e.g., 1 hour)
-        long expirationDuration = 60 * 1000; // 1 hour in milliseconds
+        long expirationDuration = jwtExpiration; // 1 hour in milliseconds
 
         // Calculate the expiration date
         long expirationTime = System.currentTimeMillis() + expirationDuration;
@@ -191,9 +194,6 @@ public class AuthenticationService {
 
         tokenRepository.save(token);
     }
-
-
-
 
     public AuthenticationResponse verifyCode(String phoneNumber, String enteredCode) {
         try {

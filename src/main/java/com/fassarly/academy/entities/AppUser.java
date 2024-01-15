@@ -7,6 +7,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,6 +38,8 @@ public class AppUser implements Serializable {
 
     private boolean isSmsVerified;
 
+//    private Date dateCreation;
+
     //relations
     @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY)
@@ -47,7 +50,6 @@ public class AppUser implements Serializable {
 
 
     @OneToMany(mappedBy = "appUser", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    @JsonIgnore
     List<Comptabilite> comptabilites;
 
 

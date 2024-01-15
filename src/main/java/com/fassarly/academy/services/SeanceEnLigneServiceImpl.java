@@ -5,12 +5,21 @@ import com.fassarly.academy.entities.SeanceEnLigne;
 import com.fassarly.academy.interfaceServices.ISeanceEnLigneService;
 import com.fassarly.academy.repositories.MatiereRepository;
 import com.fassarly.academy.repositories.SeanceEnLigneRepository;
+import com.fassarly.academy.utils.FileUpload;
 import io.jsonwebtoken.lang.Assert;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +30,10 @@ public class SeanceEnLigneServiceImpl implements ISeanceEnLigneService {
     SeanceEnLigneRepository seanceEnLigneRepository;
 
     MatiereRepository matiereRepository;
+
+    @Value("${file.upload.directory}")
+    private String uploadDirectory;
+
 
     @Override
     public SeanceEnLigne createSeanceEnLigne(SeanceEnLigne seanceEnLigne) {
@@ -59,43 +72,97 @@ public class SeanceEnLigneServiceImpl implements ISeanceEnLigneService {
         return seanceEnLignes != null ? seanceEnLignes : Collections.emptyList();
     }
 
-    public SeanceEnLigne createSeanceEnLigneAndAffectToMatiere(Long matiereId, SeanceEnLigne seanceEnLigne) {
+    @Transactional
+    public SeanceEnLigne createSeanceEnLigneAndAffectToMatiere(Long matiereId,SeanceEnLigne seanceEnLigne, MultipartFile homeWorkFile) throws IOException {
+        Matiere matiere = matiereRepository.findById(matiereId).orElse(null);
 
-            Matiere matiere = matiereRepository.findById(matiereId).orElse(null);
+        if (matiere == null) {
+            // Handle the case when the Matiere with given ID is not found
+            throw new IllegalArgumentException("Matiere not found for ID: " + matiereId);
+        }
 
-            seanceEnLigne.setMatieres(matiere);
+        // Set the Matiere for the SeanceEnLigne
+        seanceEnLigne.setMatieres(matiere);
 
-            assert matiere != null;
-            List<SeanceEnLigne> seanceEnLignes=matiere.getSeanceEnLignes();
-            seanceEnLignes.add(seanceEnLigne);
+        // Save the SeanceEnLigne to get its ID
+        SeanceEnLigne savedSession = seanceEnLigneRepository.save(seanceEnLigne);
 
-               matiereRepository.save(matiere);
-        return seanceEnLigneRepository.save(seanceEnLigne);
+        // Create the directory path for saving homeWorkFile
+        String directoryPath = uploadDirectory+"/seanceEnLigne/" + savedSession.getId() + "/homeWork/";
+
+        if (homeWorkFile != null) {
+            String homeWorkFileName = FileUpload.saveFile(directoryPath, homeWorkFile);
+            savedSession.setHomeWorkFileName(homeWorkFileName);
+        }
+
+        // Update the list of SeanceEnLigne for the Matiere
+        matiere.getSeanceEnLignes().add(savedSession);
+
+        // Save the Matiere to update its SeanceEnLigne list
+        matiereRepository.save(matiere);
+
+        return savedSession;
     }
 
 
+
     @Transactional
-    public SeanceEnLigne editSeanceEnLigne(Long seanceEnLigneId, SeanceEnLigne seanceEnLigne) {
-        // Check if the SeanceEnLigne with the given ID exists
-        Optional<SeanceEnLigne> optionalSeanceEnLigne = seanceEnLigneRepository.findById(seanceEnLigneId);
+    public SeanceEnLigne editSeanceEnLigne(Long seanceEnLigneId, SeanceEnLigne updatedSeanceEnLigne, MultipartFile homeWorkFile) throws IOException {
+        SeanceEnLigne existingSeanceEnLigne = seanceEnLigneRepository.findById(seanceEnLigneId).orElse(null);
 
-        if (optionalSeanceEnLigne.isPresent()) {
-            // Get the existing SeanceEnLigne
-            SeanceEnLigne seanceEnLigneExist = optionalSeanceEnLigne.get();
+        if (existingSeanceEnLigne == null) {
+            throw new IllegalArgumentException("SeanceEnLigne not found for ID: " + seanceEnLigneId);
+        }
 
-            // Update properties of the existing SeanceEnLigne with the new values
-            seanceEnLigneExist.setDate(seanceEnLigne.getDate());
-            seanceEnLigneExist.setHeureDebut(seanceEnLigne.getHeureDebut());
-            seanceEnLigneExist.setHeureFin(seanceEnLigne.getHeureFin());
-            seanceEnLigneExist.setLienZoom(seanceEnLigne.getLienZoom());
-            seanceEnLigneExist.setTitre(seanceEnLigne.getTitre());
+        // Update properties from the updatedSeanceEnLigne
+        existingSeanceEnLigne.setDate(updatedSeanceEnLigne.getDate());
+        existingSeanceEnLigne.setHeureDebut(updatedSeanceEnLigne.getHeureDebut());
+        existingSeanceEnLigne.setHeureFin(updatedSeanceEnLigne.getHeureFin());
+        existingSeanceEnLigne.setTitre(updatedSeanceEnLigne.getTitre());
+        existingSeanceEnLigne.setLienZoom(updatedSeanceEnLigne.getLienZoom());
 
-            // ... continue with other properties
+        // Delete existing homeWorkFile if it exists
+        if (homeWorkFile != null) {
+            deleteFile(uploadDirectory + "/seanceEnLigne/" + seanceEnLigneId + "/homeWork/" + existingSeanceEnLigne.getHomeWorkFileName());
+        }
 
-            // Save the updated SeanceEnLigne
-            return seanceEnLigneRepository.save(seanceEnLigneExist);
-        } else {
-            return null;
+        // Save new homeWorkFile
+        if (homeWorkFile != null && !homeWorkFile.isEmpty()) {
+            String homeWorkFileName = FileUpload.saveFile(uploadDirectory + "/seanceEnLigne/" + seanceEnLigneId + "/homeWork/", homeWorkFile);
+            existingSeanceEnLigne.setHomeWorkFileName(homeWorkFileName);
+        }
+
+        return seanceEnLigneRepository.save(existingSeanceEnLigne);
+    }
+
+
+
+
+
+
+
+
+
+    private void deleteFile(String filePath) {
+        try {
+            Files.deleteIfExists(Paths.get(filePath));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void deleteFolder(String folderPath) {
+        try {
+            Path folder = Paths.get(folderPath);
+            if (Files.exists(folder)) {
+                Files.walk(folder)
+                        .sorted(Comparator.reverseOrder())
+                        .map(Path::toFile)
+                        .forEach(File::delete);
+            }
+        } catch (IOException e) {
+            // Handle the exception (e.g., log it)
+            e.printStackTrace();
         }
     }
 
