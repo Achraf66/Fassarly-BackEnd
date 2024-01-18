@@ -27,7 +27,7 @@ import static java.nio.file.Paths.get;
 import static org.apache.tomcat.util.http.fileupload.FileUploadBase.CONTENT_DISPOSITION;
 
 @RestController
-@CrossOrigin("http://localhost:4200/")
+@CrossOrigin("*")
 public class PdfController {
     @Value("${file.upload.directory}")
     private  String UPLOAD_DIRECTORY;

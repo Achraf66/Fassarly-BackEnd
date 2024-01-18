@@ -16,7 +16,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/seanceEnLigne")
 @AllArgsConstructor
-@CrossOrigin("http://localhost:4200/")
+@CrossOrigin("*")
 public class SeanceEnLigneController {
 
     SeanceEnLigneServiceImpl seanceEnLigneService;

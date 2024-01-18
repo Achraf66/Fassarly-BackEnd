@@ -9,8 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/messages")
-@CrossOrigin("http://localhost:4200/")
-
+@CrossOrigin("*")
 public class MessageController {
 
     @Autowired

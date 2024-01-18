@@ -17,7 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/examen/")
 @AllArgsConstructor
-@CrossOrigin("http://localhost:4200/")
+@CrossOrigin("*")
 public class ExamenController {
 
     ExamenServiceImpl examenService;

@@ -17,7 +17,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/prototypeExam")
-@CrossOrigin("http://localhost:4200/")
+@CrossOrigin("*")
 public class PrototypeExamController {
 
     @Autowired

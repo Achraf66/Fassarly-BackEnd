@@ -19,7 +19,7 @@ import java.util.*;
 @RequestMapping("/api/matiere")
 @AllArgsConstructor
 
-@CrossOrigin("http://localhost:4200/")
+@CrossOrigin("*")
 public class MatiereController {
 
     MatiereServiceImpl matiereService;
