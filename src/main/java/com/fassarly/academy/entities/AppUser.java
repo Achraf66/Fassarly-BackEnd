@@ -7,7 +7,6 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,11 +38,6 @@ public class AppUser implements Serializable {
     private boolean isSmsVerified;
 
 //    private Date dateCreation;
-
-    //relations
-    @JsonIgnore
-    @OneToOne(fetch = FetchType.LAZY)
-    Abonnement abonnement;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<UserRole> roles = new HashSet<>();

@@ -24,7 +24,7 @@ public class TokenCleanupTask {
         this.tokenRepository = tokenRepository;
     }
 
-    @Scheduled(fixedRate = 300000)
+    @Scheduled(fixedRate = 900000)
     public void cleanupExpiredTokens() {
         // Get all tokens from the repository
         List<Token> allTokens = tokenRepository.findAll();

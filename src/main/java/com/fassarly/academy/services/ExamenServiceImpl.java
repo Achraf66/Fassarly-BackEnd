@@ -5,20 +5,15 @@ import com.fassarly.academy.entities.Matiere;
 import com.fassarly.academy.interfaceServices.IExamenService;
 import com.fassarly.academy.repositories.ExamenRepository;
 import com.fassarly.academy.repositories.MatiereRepository;
-import com.fassarly.academy.utils.FileUpload;
 import lombok.AllArgsConstructor;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor

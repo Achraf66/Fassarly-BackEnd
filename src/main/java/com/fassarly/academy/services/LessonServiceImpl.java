@@ -6,11 +6,10 @@ import com.fassarly.academy.entities.Theme;
 import com.fassarly.academy.interfaceServices.ILessonService;
 import com.fassarly.academy.repositories.LessonRepository;
 import com.fassarly.academy.repositories.ThemeRepository;
-import com.fassarly.academy.utils.FileUpload;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -27,9 +26,6 @@ public class LessonServiceImpl implements ILessonService {
     LessonRepository lessonRepository;
 
     ThemeRepository themeRepository;
-
-    @Value("${file.upload.directory}")
-    private String uploadDirectory;
 
     @Autowired
     private AzureBlobStorageServiceImpl azureBlobStorageService;
@@ -56,7 +52,10 @@ public class LessonServiceImpl implements ILessonService {
     }
 
     @Override
+    @Transactional
     public void deleteLesson(Long id) {
+        String blobDirectoryPath = "lessons/" + id;
+        azureBlobStorageService.deleteFolder(blobDirectoryPath);
         lessonRepository.deleteById(id);
     }
 
@@ -118,13 +117,18 @@ public class LessonServiceImpl implements ILessonService {
             Lesson updatedLesson = lessonRepository.save(lesson);
 
             if (piecesJointes != null) {
-                // Save the updated pieceJointes files using the FileUpload service
-                List<String> pieceJointesFileNames = new ArrayList<>();
+
+                // Upload lesson-related files to Azure Blob Storage
+                String blobDirectoryPath = "lessons/" + lesson.getId() + "/piecesJointes/";
+                azureBlobStorageService.deleteFolder(blobDirectoryPath);
+
+                // Save the pieceJointes files using the AzureBlobStorageService
+                List<String> pieceJointesBlobUrls = new ArrayList<>();
                 for (MultipartFile pieceJointe : piecesJointes) {
-                    String pieceJointeFileName = FileUpload.saveFile(uploadDirectory + "/lessons/" + updatedLesson.getId() + "/piecesJointes/", pieceJointe);
-                    pieceJointesFileNames.add(pieceJointeFileName);
+                    azureBlobStorageService.uploadBlob(blobDirectoryPath, pieceJointe);
+                    pieceJointesBlobUrls.add(azureBlobStorageService.getBlobUrl(blobDirectoryPath, pieceJointe.getOriginalFilename()));
                 }
-                updatedLesson.setPiecesJointes(pieceJointesFileNames);
+                lesson.setPiecesJointes(pieceJointesBlobUrls);
             }
 
             return lessonRepository.save(updatedLesson);

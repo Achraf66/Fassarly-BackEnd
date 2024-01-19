@@ -1,29 +1,21 @@
 package com.fassarly.academy.services;
 
-import com.fassarly.academy.entities.Examen;
+import com.fassarly.academy.config.AzureBlobStorageServiceImpl;
 import com.fassarly.academy.entities.Matiere;
-import com.fassarly.academy.entities.PrototypeExam;
 import com.fassarly.academy.entities.SeanceEnLigne;
 import com.fassarly.academy.interfaceServices.ISeanceEnLigneService;
 import com.fassarly.academy.repositories.MatiereRepository;
 import com.fassarly.academy.repositories.SeanceEnLigneRepository;
-import com.fassarly.academy.utils.FileUpload;
 import io.jsonwebtoken.lang.Assert;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -33,8 +25,9 @@ public class SeanceEnLigneServiceImpl implements ISeanceEnLigneService {
 
     MatiereRepository matiereRepository;
 
-    @Value("${file.upload.directory}")
-    private String uploadDirectory;
+    @Autowired
+    private AzureBlobStorageServiceImpl azureBlobStorageService;
+
 
 
     @Override
@@ -90,11 +83,12 @@ public class SeanceEnLigneServiceImpl implements ISeanceEnLigneService {
         SeanceEnLigne savedSession = seanceEnLigneRepository.save(seanceEnLigne);
 
         // Create the directory path for saving homeWorkFile
-        String directoryPath = uploadDirectory+"/seanceEnLigne/" + savedSession.getId() + "/homeWork/";
+        String blobDirectoryPath = "seanceEnLigne/" + savedSession.getId() + "/homeWork/";
 
         if (homeWorkFile != null) {
-            String homeWorkFileName = FileUpload.saveFile(directoryPath, homeWorkFile);
-            savedSession.setHomeWorkFileName(homeWorkFileName);
+            // Upload examFile to Azure Blob Storage
+            azureBlobStorageService.uploadBlob(blobDirectoryPath, homeWorkFile);
+            seanceEnLigne.setHomeWorkFileName(azureBlobStorageService.getBlobUrl(blobDirectoryPath, homeWorkFile.getOriginalFilename()));
         }
 
         // Update the list of SeanceEnLigne for the Matiere
@@ -123,15 +117,19 @@ public class SeanceEnLigneServiceImpl implements ISeanceEnLigneService {
         existingSeanceEnLigne.setTitre(updatedSeanceEnLigne.getTitre());
         existingSeanceEnLigne.setLienZoom(updatedSeanceEnLigne.getLienZoom());
 
+        String blobDirectoryPath = "seanceEnLigne/" + existingSeanceEnLigne.getId() + "/homeWork/";
+
         // Delete existing homeWorkFile if it exists
-        if (homeWorkFile != null) {
-            deleteFile(uploadDirectory + "/seanceEnLigne/" + seanceEnLigneId + "/homeWork/" + existingSeanceEnLigne.getHomeWorkFileName());
-        }
+//        if (homeWorkFile != null) {
+//
+//            deleteFile(uploadDirectory + "/seanceEnLigne/" + seanceEnLigneId + "/homeWork/" + existingSeanceEnLigne.getHomeWorkFileName());
+//
+//        }
 
         // Save new homeWorkFile
         if (homeWorkFile != null && !homeWorkFile.isEmpty()) {
-            String homeWorkFileName = FileUpload.saveFile(uploadDirectory + "/seanceEnLigne/" + seanceEnLigneId + "/homeWork/", homeWorkFile);
-            existingSeanceEnLigne.setHomeWorkFileName(homeWorkFileName);
+            azureBlobStorageService.uploadBlob(blobDirectoryPath, homeWorkFile);
+            existingSeanceEnLigne.setHomeWorkFileName(azureBlobStorageService.getBlobUrl(blobDirectoryPath, homeWorkFile.getOriginalFilename()));
         }
 
         return seanceEnLigneRepository.save(existingSeanceEnLigne);
@@ -146,7 +144,11 @@ public class SeanceEnLigneServiceImpl implements ISeanceEnLigneService {
                 .orElseThrow(() -> new IllegalArgumentException("LiveSession not found with ID: " + liveSessionId));
 
         // Delete associated folder
-        deleteFolder(uploadDirectory+"/seanceEnLigne/" + liveSessionId);
+        String blobDirectoryPath = "seanceEnLigne/" + liveSessionId + "/";
+
+        // Delete associated blob folder from Azure Blob Storage
+        azureBlobStorageService.deleteFolder(blobDirectoryPath);
+
 
         Matiere matiere = seanceEnLigne.getMatieres();
         // Remove association from parent Examen
@@ -158,29 +160,5 @@ public class SeanceEnLigneServiceImpl implements ISeanceEnLigneService {
     }
 
 
-
-
-    private void deleteFile(String filePath) {
-        try {
-            Files.deleteIfExists(Paths.get(filePath));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void deleteFolder(String folderPath) {
-        try {
-            Path folder = Paths.get(folderPath);
-            if (Files.exists(folder)) {
-                Files.walk(folder)
-                        .sorted(Comparator.reverseOrder())
-                        .map(Path::toFile)
-                        .forEach(File::delete);
-            }
-        } catch (IOException e) {
-            // Handle the exception (e.g., log it)
-            e.printStackTrace();
-        }
-    }
 
 }

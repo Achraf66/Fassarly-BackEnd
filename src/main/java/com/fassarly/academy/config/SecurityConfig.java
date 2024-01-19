@@ -65,19 +65,66 @@ public class SecurityConfig {
                                     // Additional antMatchers or requestMatchers can be added here
                                     .requestMatchers("/api/v1/auth/**").permitAll()
                                     .requestMatchers("/api/roles/getAllRoles").permitAll()
-
                                     .requestMatchers("/api/orange/**").permitAll()
+                                    .requestMatchers("/api/orange/**").permitAll()
+
+
 
                                     // Allow any other request only if authenticated
                                     .requestMatchers("/api/utilisateur/findByNumeroTel/**").authenticated()
                                     .requestMatchers("/api/matiere/findMatiereByUser/**").authenticated()
-                                    .requestMatchers("/images/**").permitAll()
-                                    .requestMatchers("/download**").authenticated()
                                     .requestMatchers(HttpMethod.GET, "/api/offers/**").permitAll()
+                                    .requestMatchers(HttpMethod.GET, "/api/matiere/**").authenticated()
+                                    .requestMatchers(HttpMethod.GET, "/api/examen/**").authenticated()
+                                    .requestMatchers(HttpMethod.GET, "/api/lesson/**").authenticated()
+                                    .requestMatchers(HttpMethod.GET, "/api/prototypeExam/**").authenticated()
+                                    .requestMatchers(HttpMethod.GET, "/api/seanceEnLigne/**").authenticated()
+                                    .requestMatchers(HttpMethod.GET, "/api/theme/**").authenticated()
+                                    .requestMatchers(HttpMethod.GET, "/api/utilisateur/**").authenticated()
+                                    .requestMatchers(HttpMethod.PUT, "/api/utilisateur/**").authenticated()
+
+
+
+             /********************************************************Admin Apis********************************************************/
                                     .requestMatchers("/api/offers/**").hasAnyAuthority(new String[]{"ADMIN"})
+                                    .requestMatchers(" /api/comptabilite/**").hasAnyAuthority(new String[]{"ADMIN"})
+
+                                    .requestMatchers(HttpMethod.POST, "/api/offers/**").hasAnyAuthority(new String[]{"ADMIN"})
+                                    .requestMatchers(HttpMethod.PUT, "/api/offers/**").hasAnyAuthority(new String[]{"ADMIN"})
+                                    .requestMatchers(HttpMethod.DELETE, "/api/offers/**").hasAnyAuthority(new String[]{"ADMIN"})
+
+                                    .requestMatchers(HttpMethod.POST, "/api/matiere/**").hasAnyAuthority(new String[]{"ADMIN"})
+                                    .requestMatchers(HttpMethod.PUT, "/api/matiere/**").hasAnyAuthority(new String[]{"ADMIN"})
+                                    .requestMatchers(HttpMethod.DELETE, "/api/matiere/**").hasAnyAuthority(new String[]{"ADMIN"})
 
 
-                            .anyRequest().permitAll()
+                                    .requestMatchers(HttpMethod.POST, "/api/examen/**").hasAnyAuthority(new String[]{"ADMIN"})
+                                    .requestMatchers(HttpMethod.PUT, "/api/examen/**").hasAnyAuthority(new String[]{"ADMIN"})
+                                    .requestMatchers(HttpMethod.DELETE, "/api/examen/**").hasAnyAuthority(new String[]{"ADMIN"})
+
+
+                                    .requestMatchers(HttpMethod.POST, "/api/lesson/**").hasAnyAuthority(new String[]{"ADMIN"})
+                                    .requestMatchers(HttpMethod.PUT, "/api/lesson/**").hasAnyAuthority(new String[]{"ADMIN"})
+                                    .requestMatchers(HttpMethod.DELETE, "/api/lesson/**").hasAnyAuthority(new String[]{"ADMIN"})
+
+
+                                    .requestMatchers(HttpMethod.POST, "/api/prototypeExam/**").hasAnyAuthority(new String[]{"ADMIN"})
+                                    .requestMatchers(HttpMethod.PUT, "/api/prototypeExam/**").hasAnyAuthority(new String[]{"ADMIN"})
+                                    .requestMatchers(HttpMethod.DELETE, "/api/prototypeExam/**").hasAnyAuthority(new String[]{"ADMIN"})
+
+                                    .requestMatchers(HttpMethod.POST, "/api/seanceEnLigne/**").hasAnyAuthority(new String[]{"ADMIN"})
+                                    .requestMatchers(HttpMethod.PUT, "/api/seanceEnLigne/**").hasAnyAuthority(new String[]{"ADMIN"})
+                                    .requestMatchers(HttpMethod.DELETE, "/api/seanceEnLigne/**").hasAnyAuthority(new String[]{"ADMIN"})
+
+
+                                    .requestMatchers(HttpMethod.POST, "/api/theme/**").hasAnyAuthority(new String[]{"ADMIN"})
+                                    .requestMatchers(HttpMethod.PUT, "/api/theme/**").hasAnyAuthority(new String[]{"ADMIN"})
+                                    .requestMatchers(HttpMethod.DELETE, "/api/theme/**").hasAnyAuthority(new String[]{"ADMIN"})
+
+                                    .requestMatchers(HttpMethod.POST, "/api/utilisateur/**").hasAnyAuthority(new String[]{"ADMIN"})
+                                    .requestMatchers(HttpMethod.DELETE, "/api/utilisateur/**").hasAnyAuthority(new String[]{"ADMIN"})
+
+                                    .anyRequest().authenticated()
                     )
                     .sessionManagement(session -> session.maximumSessions(1))
                     .authenticationProvider(authenticationProvider())

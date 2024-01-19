@@ -23,8 +23,6 @@ public class LessonController {
 
     LessonServiceImpl lessonService;
 
-    @Value("${file.upload.directory}")
-    private String uploadDirectory;
 
     //-----------------------------------CRUD begins-----------------------------------//
 
@@ -98,21 +96,10 @@ public class LessonController {
             if (lesson == null) {
                 return ResponseEntity.notFound().build();
             }
-            try {
-                // Delete the examen folder
-                String examenFolderPath = uploadDirectory + "/lessons/" + lesson.getId() ;
-                FileUtils.deleteDirectory(new File(examenFolderPath));
+        // Delete the examen entry from the database
+        lessonService.deleteLesson(lessonId);
 
-                // Delete the examen entry from the database
-                lessonService.deleteLesson(lessonId);
-
-                return ResponseEntity.status(HttpStatus.OK).body("{\"message\": \"Lesson supprimé avec succès\"}");
-            } catch (IOException e) {
-                e.printStackTrace(); // Log the exception
-                // If deletion fails, you might want to rollback the deletion of the folder
-                // and return an appropriate response
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"Failed to delete examen\"}");
-            }
+        return ResponseEntity.status(HttpStatus.OK).body("{\"message\": \"Lesson supprimé avec succès\"}");
     }
 
 
