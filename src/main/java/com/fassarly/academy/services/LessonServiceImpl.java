@@ -1,5 +1,6 @@
 package com.fassarly.academy.services;
 
+import com.fassarly.academy.config.AzureBlobStorageServiceImpl;
 import com.fassarly.academy.entities.Lesson;
 import com.fassarly.academy.entities.Theme;
 import com.fassarly.academy.interfaceServices.ILessonService;
@@ -7,6 +8,7 @@ import com.fassarly.academy.repositories.LessonRepository;
 import com.fassarly.academy.repositories.ThemeRepository;
 import com.fassarly.academy.utils.FileUpload;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +30,10 @@ public class LessonServiceImpl implements ILessonService {
 
     @Value("${file.upload.directory}")
     private String uploadDirectory;
+
+    @Autowired
+    private AzureBlobStorageServiceImpl azureBlobStorageService;
+
 
     @Override
     public Lesson createLesson(Lesson lesson) {
@@ -77,13 +83,16 @@ public class LessonServiceImpl implements ILessonService {
 
             themeRepository.save(theme);
 
-            // Save the pieceJointes files using the FileUpload service
-            List<String> pieceJointesFileNames = new ArrayList<>();
+            // Upload lesson-related files to Azure Blob Storage
+            String blobDirectoryPath = "lessons/" + lesson.getId() + "/piecesJointes/";
+
+            // Save the pieceJointes files using the AzureBlobStorageService
+            List<String> pieceJointesBlobUrls = new ArrayList<>();
             for (MultipartFile pieceJointe : piecesJointes) {
-                String pieceJointeFileName = FileUpload.saveFile(uploadDirectory + "/lessons/" + lesson.getId() + "/piecesJointes/", pieceJointe);
-                pieceJointesFileNames.add(pieceJointeFileName);
+                azureBlobStorageService.uploadBlob(blobDirectoryPath, pieceJointe);
+                pieceJointesBlobUrls.add(azureBlobStorageService.getBlobUrl(blobDirectoryPath, pieceJointe.getOriginalFilename()));
             }
-            lesson.setPiecesJointes(pieceJointesFileNames);
+            lesson.setPiecesJointes(pieceJointesBlobUrls);
 
             return lessonRepository.save(lesson);
         }

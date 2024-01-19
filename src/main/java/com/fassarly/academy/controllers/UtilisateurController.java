@@ -27,10 +27,8 @@ public class UtilisateurController {
     @PostMapping("/addUtilisateur")
     public ResponseEntity<String> createUtilisateur(@RequestBody AppUser appUser) {
         try {
-            AppUser createdAppUser = utilisateurService.createUtilisateur(appUser);
+             utilisateurService.createUtilisateur(appUser);
             return ResponseEntity.status(HttpStatus.OK).body("{\"message\": \"Utilisateur créé avec succès\"}");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"Une erreur s'est produite\"}");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"Une erreur s'est produite\"}");
         }

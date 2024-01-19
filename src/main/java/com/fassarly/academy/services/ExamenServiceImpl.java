@@ -28,9 +28,6 @@ public class ExamenServiceImpl implements IExamenService {
 
     MatiereRepository matiereRepository;
 
-    @Value("${file.upload.directory}")
-    private String uploadDirectory;
-
     private final String someString;
 
 

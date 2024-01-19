@@ -1,23 +1,18 @@
 package com.fassarly.academy.services;
 
 
+import com.fassarly.academy.config.AzureBlobStorageServiceImpl;
 import com.fassarly.academy.entities.Examen;
 import com.fassarly.academy.entities.PrototypeExam;
 import com.fassarly.academy.repositories.ExamenRepository;
 import com.fassarly.academy.repositories.PrototypeExamRepository;
-import com.fassarly.academy.utils.FileUpload;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -32,8 +27,8 @@ public class PrototypeExamServiceImpl {
     @Autowired
     private ExamenRepository examenRepository;
 
-    @Value("${file.upload.directory}")
-    private String uploadDirectory;
+    @Autowired
+    private AzureBlobStorageServiceImpl azureBlobStorageService;
 
 
     @Transactional(rollbackFor = Exception.class)
@@ -42,30 +37,37 @@ public class PrototypeExamServiceImpl {
                                                               MultipartFile correctionFile,
                                                               String correctionLink,
                                                               Long examenId) throws IOException {
+
         Examen examen = examenRepository.findById(examenId)
                 .orElseThrow(() -> new IllegalArgumentException("Examen not found with ID: " + examenId));
 
         PrototypeExam prototypeExam = PrototypeExam.builder().nomPrototypeExam(nomPrototypeExam).build();
         prototypeExamRepository.save(prototypeExam);
 
-        String directoryPath = uploadDirectory + "/PrototypeExam/" + examen.getId() + "/" + prototypeExam.getId() + "/";
-        if(correctionFile!=null) {
-            String correctionFileName = FileUpload.saveFile(directoryPath, correctionFile);
-            prototypeExam.setCorrectionFile(correctionFileName);
-        }
-        if(examFile!=null) {
-            String examFileName = FileUpload.saveFile(directoryPath, examFile);
-            prototypeExam.setExamFile(examFileName);
-        }
+        // Upload examFile to Azure Blob Storage
+        String blobDirectoryPath = "PrototypeExam/" + examen.getId() + "/" + prototypeExam.getId() + "/";
+
+        // Upload examFile to Azure Blob Storage
+            azureBlobStorageService.uploadBlob(blobDirectoryPath, examFile);
+            prototypeExam.setExamFile(azureBlobStorageService.getBlobUrl(blobDirectoryPath, examFile.getOriginalFilename()));
+
+        // Upload correctionFile to Azure Blob Storage (if present)
+            if (correctionFile != null) {
+                 azureBlobStorageService.uploadBlob(blobDirectoryPath, correctionFile);
+                prototypeExam.setCorrectionFile(azureBlobStorageService.getBlobUrl(blobDirectoryPath, correctionFile.getOriginalFilename()));
+            }
+
+
         prototypeExam.setCorrectionLink(correctionLink);
 
         List<PrototypeExam> prototypeExams = examen.getPrototypeExams();
         prototypeExams.add(prototypeExam);
         prototypeExam.setExam(examen);
 
-                examenRepository.save(examen);
+        examenRepository.save(examen);
         return prototypeExamRepository.save(prototypeExam);
     }
+
 
 
 
@@ -75,38 +77,37 @@ public class PrototypeExamServiceImpl {
                                            MultipartFile examFile,
                                            MultipartFile correctionFile,
                                            String correctionLink) throws IOException {
-        PrototypeExam prototypeExam = prototypeExamRepository.findById(prototypeExamId)
-                .orElseThrow(() -> new IllegalArgumentException("PrototypeExam not found with ID: " + prototypeExamId));
 
-        prototypeExam.setNomPrototypeExam(nomPrototypeExam);
-        prototypeExam.setCorrectionLink(correctionLink);
+            Optional<PrototypeExam> existingPrototypeExamOptional = prototypeExamRepository.findById(prototypeExamId);
 
-        String directoryPath = uploadDirectory + "/PrototypeExam/" + prototypeExam.getExam().getId() + "/" + prototypeExam.getId() + "/";
+            if (existingPrototypeExamOptional.isPresent()) {
+                PrototypeExam existingPrototypeExam = existingPrototypeExamOptional.get();
 
-        // Delete old exam file
-        if (examFile != null && !examFile.isEmpty() && prototypeExam.getExamFile() != null) {
-            deleteFile(directoryPath + prototypeExam.getExamFile());
+                // Update the fields
+                existingPrototypeExam.setNomPrototypeExam(nomPrototypeExam);
+                existingPrototypeExam.setCorrectionLink(correctionLink);
+
+                // Upload new examFile to Azure Blob Storage if provided
+                if (examFile != null) {
+                    String blobDirectoryPath = "PrototypeExam/" + existingPrototypeExam.getExam().getId() + "/" + existingPrototypeExam.getId() + "/";
+                    azureBlobStorageService.uploadBlob(blobDirectoryPath, examFile);
+                    existingPrototypeExam.setExamFile(azureBlobStorageService.getBlobUrl(blobDirectoryPath, examFile.getOriginalFilename()));
+                }
+
+                // Upload new correctionFile to Azure Blob Storage if provided
+                if (correctionFile != null) {
+                    String blobDirectoryPath = "PrototypeExam/" + existingPrototypeExam.getExam().getId() + "/" + existingPrototypeExam.getId() + "/";
+                    azureBlobStorageService.uploadBlob(blobDirectoryPath, correctionFile);
+                    existingPrototypeExam.setCorrectionFile(azureBlobStorageService.getBlobUrl(blobDirectoryPath, correctionFile.getOriginalFilename()));
+                }
+
+                // Save the updated prototype exam object to the database
+                return prototypeExamRepository.save(existingPrototypeExam);
+            } else {
+                throw new EntityNotFoundException("PrototypeExam with ID " + prototypeExamId + " not found");
+            }
         }
 
-        // Delete old correction file
-        if (correctionFile != null && !correctionFile.isEmpty() && prototypeExam.getCorrectionFile() != null) {
-            deleteFile(directoryPath + prototypeExam.getCorrectionFile());
-        }
-
-        // Save new exam file
-        if (examFile != null && !examFile.isEmpty()) {
-            String examFileName = FileUpload.saveFile(directoryPath, examFile);
-            prototypeExam.setExamFile(examFileName);
-        }
-
-        // Save new correction file
-        if (correctionFile != null && !correctionFile.isEmpty()) {
-            String correctionFileName = FileUpload.saveFile(directoryPath, correctionFile);
-            prototypeExam.setCorrectionFile(correctionFileName);
-        }
-
-        return prototypeExamRepository.save(prototypeExam);
-    }
 
 
 
@@ -115,8 +116,9 @@ public class PrototypeExamServiceImpl {
         PrototypeExam prototypeExam = prototypeExamRepository.findById(prototypeExamId)
                 .orElseThrow(() -> new IllegalArgumentException("PrototypeExam not found with ID: " + prototypeExamId));
 
-        // Delete associated folder
-        deleteFolder(uploadDirectory + "/PrototypeExam/" + prototypeExam.getExam().getId() + "/" + prototypeExam.getId() + "/");
+        // Delete associated blob folder from Azure Blob Storage
+        String blobDirectoryPath = "PrototypeExam/" + prototypeExam.getExam().getId() +"/"+prototypeExamId;
+        azureBlobStorageService.deleteFolder(blobDirectoryPath);
 
         // Remove association from parent Examen
         Examen examen = prototypeExam.getExam();
@@ -143,45 +145,6 @@ public class PrototypeExamServiceImpl {
         // Return the modified list with the original order.
         return prototypeExams;
     }
-
-
-
-
-
-
-
-
-
-
-
-    private void deleteFile(String filePath) {
-        try {
-            Files.deleteIfExists(Paths.get(filePath));
-        } catch (IOException e) {
-            // Handle the exception (e.g., log it)
-            e.printStackTrace();
-        }
-    }
-
-
-    private void deleteFolder(String folderPath) {
-        try {
-            Path folder = Paths.get(folderPath);
-            if (Files.exists(folder)) {
-                Files.walk(folder)
-                        .sorted(Comparator.reverseOrder())
-                        .map(Path::toFile)
-                        .forEach(File::delete);
-            }
-        } catch (IOException e) {
-            // Handle the exception (e.g., log it)
-            e.printStackTrace();
-        }
-    }
-
-
-
-
 
 
 

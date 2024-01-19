@@ -1,18 +1,21 @@
 package com.fassarly.academy.services;
 
+import com.azure.storage.blob.BlobClient;
+import com.azure.storage.blob.BlobContainerClient;
+import com.azure.storage.blob.BlobServiceClient;
+import com.azure.storage.blob.BlobServiceClientBuilder;
 import com.fassarly.academy.entities.Matiere;
 import com.fassarly.academy.interfaceServices.IMatiereService;
 import com.fassarly.academy.repositories.AppUserRepository;
 import com.fassarly.academy.repositories.MatiereRepository;
-import com.fassarly.academy.utils.FileUpload;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,36 +29,40 @@ public class MatiereServiceImpl implements IMatiereService {
 
     AppUserRepository appUserRepository;
 
+    @Value("${azure.storage.connection-string}")
+    private String azureStorageConnectionString;
+
+    @Value("${azure.storage.container-name}")
+    private String containerName;
+
 
     @Override
     @Transactional
     public Matiere createMatiere(String nomMatiere, MultipartFile imageFile) throws IOException {
 
-        String uploadDir = "C:\\Users\\saifa\\OneDrive\\Desktop\\fassarlyBack\\fassarlyBack\\src\\main\\resources\\uploads";
+     Matiere matiere = new Matiere();
+     matiere.setNomMatiere(nomMatiere);
 
-        // Create matieres folder if not exists
-        String matieresDir = uploadDir + "\\matieres";
-        File matieresFolder = new File(matieresDir);
-        if (!matieresFolder.exists()) {
-            matieresFolder.mkdirs();
+     // Save the matiere object to the database to get the ID
+     matiere = matiereRepository.save(matiere);
+
+        // Initialize BlobServiceClient
+        BlobServiceClient blobServiceClient = new BlobServiceClientBuilder()
+                .connectionString(azureStorageConnectionString)
+                .buildClient();
+        BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(containerName);
+        containerClient.createIfNotExists();
+
+        // Upload the image to Azure Blob Storage
+        String blobName = "matieres/" + matiere.getId() + "/" + imageFile.getOriginalFilename();
+        BlobClient blobClient = containerClient.getBlobClient(blobName);
+
+        try (InputStream imageStream = imageFile.getInputStream()) {
+            blobClient.upload(imageStream, imageFile.getSize());
         }
 
-        Matiere matiere = new Matiere();
-        matiere.setNomMatiere(nomMatiere);
-
-        // Save the matiere object to the database to get the ID
-        matiere = matiereRepository.save(matiere);
-
-        // Create a folder for the matiere based on its ID
-        String uploadDirMatiere = matieresDir + "\\" + matiere.getId();
-        File matiereFolder = new File(uploadDirMatiere);
-        if (!matiereFolder.exists()) {
-            matiereFolder.mkdirs();
-        }
-
-        // Upload the image and set the path in the matiere object
-        String fileName = FileUpload.saveFile(uploadDirMatiere, imageFile);
-        matiere.setPhoto(fileName);
+      matiere.setNomMatiere(nomMatiere);
+      matiere.setPhoto(blobClient.getBlobUrl().toString()); // Use the Blob URL as the photo path
 
         // Save the updated matiere object to the database
         return matiereRepository.save(matiere);
@@ -95,8 +102,6 @@ public class MatiereServiceImpl implements IMatiereService {
 
     @Transactional
     public Matiere updateMatiere(Long matiereId, String nomMatiere, MultipartFile imageFile) throws IOException {
-        String uploadDir = "C:\\Users\\saifa\\OneDrive\\Desktop\\fassarlyBack\\fassarlyBack\\src\\main\\resources\\uploads";
-
         Optional<Matiere> existingMatiereOptional = matiereRepository.findById(matiereId);
 
         if (existingMatiereOptional.isPresent()) {
@@ -106,24 +111,25 @@ public class MatiereServiceImpl implements IMatiereService {
             existingMatiere.setNomMatiere(nomMatiere);
             // Update other fields if needed
 
-            // Create matieres folder if not exists
-            String matieresDir = uploadDir + "\\matieres";
-            File matieresFolder = new File(matieresDir);
-            if (!matieresFolder.exists()) {
-                matieresFolder.mkdirs();
-            }
-
-            // Create a folder for the matiere based on its ID
-            String uploadDirMatiere = matieresDir + "\\" + existingMatiere.getId();
-            File matiereFolder = new File(uploadDirMatiere);
-            if (!matiereFolder.exists()) {
-                matiereFolder.mkdirs();
-            }
-
             if (imageFile != null) {
                 // If the file is not null, update the image
-                String fileName = FileUpload.saveFile(uploadDirMatiere, imageFile);
-                existingMatiere.setPhoto(fileName);
+
+                // Initialize BlobServiceClient
+                BlobServiceClient blobServiceClient = new BlobServiceClientBuilder()
+                        .connectionString(azureStorageConnectionString)
+                        .buildClient();
+                BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(containerName);
+                containerClient.createIfNotExists();
+
+                // Upload the image to Azure Blob Storage
+                String blobName = "matieres/" + existingMatiere.getId() + "/" + imageFile.getOriginalFilename();
+                BlobClient blobClient = containerClient.getBlobClient(blobName);
+
+                try (InputStream imageStream = imageFile.getInputStream()) {
+                    blobClient.upload(imageStream, imageFile.getSize());
+                }
+
+                existingMatiere.setPhoto(blobClient.getBlobUrl().toString()); // Use the Blob URL as the photo path
             }
 
             // Save the updated matiere object to the database

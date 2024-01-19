@@ -1,21 +1,20 @@
 package com.fassarly.academy.services;
 
 import com.fassarly.academy.DTO.ComptabiliteDTO;
+import com.fassarly.academy.config.AzureBlobStorageServiceImpl;
 import com.fassarly.academy.entities.AppUser;
 import com.fassarly.academy.entities.UserRole;
 import com.fassarly.academy.interfaceServices.IUtilisateurService;
 import com.fassarly.academy.repositories.AppUserRepository;
 import com.fassarly.academy.repositories.RoleRepository;
-import com.fassarly.academy.utils.FileUpload;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,11 +30,11 @@ public class UtilisateurServiceImpl implements IUtilisateurService {
     @Autowired
     private ModelMapper modelMapper;
 
-
     private final PasswordEncoder passwordEncoder;
 
-    @Value("${file.upload.directory}")
-    private String uploadDirectory;
+    @Autowired
+    private AzureBlobStorageServiceImpl azureBlobStorageService;
+
 
     @Override
     public AppUser createUtilisateur(AppUser appUser) {
@@ -66,7 +65,12 @@ public class UtilisateurServiceImpl implements IUtilisateurService {
     }
 
     @Override
+    @Transactional
     public void deleteUtilisateur(Long id) {
+
+        String blobDirectoryPath = "Users/" + id + "/";
+        azureBlobStorageService.deleteFolder(blobDirectoryPath);
+
         appUserRepository.deleteById(id);
     }
 
@@ -121,20 +125,11 @@ public class UtilisateurServiceImpl implements IUtilisateurService {
 
         // Update photo if provided
         if (photoFile != null) {
-            // Check if the user has an existing photo
-            if (appUser.getPhoto() != null && !appUser.getPhoto().isEmpty()) {
-                // Delete the existing photo
-                String userFolderImagePath = uploadDirectory + "/Users/" + appUser.getId();
-                File existingPhoto = new File(userFolderImagePath, appUser.getPhoto());
-                if (existingPhoto.exists()) {
-                    existingPhoto.delete();
-                }
-            }
-
-            // Save the new photo
-            String userFolderImagePath = uploadDirectory + "/Users/" + appUser.getId();
-            String userPhotoName = FileUpload.saveFile(userFolderImagePath, photoFile);
-            appUser.setPhoto(userPhotoName);
+                // Upload examFile to Azure Blob Storage
+                String blobDirectoryPath = "Users/" + appUser.getId() + "/";
+                // Upload examFile to Azure Blob Storage
+                azureBlobStorageService.uploadBlob(blobDirectoryPath, photoFile);
+                appUser.setPhoto(azureBlobStorageService.getBlobUrl(blobDirectoryPath, photoFile.getOriginalFilename()));
         }
 
 
