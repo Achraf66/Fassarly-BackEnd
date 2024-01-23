@@ -131,7 +131,15 @@ public class MatiereController {
     }
 
 
-
+    @GetMapping("/search")
+    public ResponseEntity<List<Matiere>> searchMatiereByNom(@RequestParam("searchTerm") String searchTerm) {
+        try {
+            List<Matiere> result = matiereService.searchMatiereByNom(searchTerm);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 
 }

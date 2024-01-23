@@ -143,6 +143,9 @@ public class MatiereServiceImpl implements IMatiereService {
 
 
 
+    public List<Matiere> searchMatiereByNom(String searchTerm) {
+        return matiereRepository.searchMatiereByNom(searchTerm.toLowerCase());
+    }
 
 
 
