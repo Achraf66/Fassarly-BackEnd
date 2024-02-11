@@ -21,9 +21,9 @@ public interface IExamenService {
     public List<Examen> findExamenByMatieresId(Long matiereId);
 
 
-    public Examen createExamenAndAffectToMatiere(Long matiereId, String nomExamen ) throws IOException ;
+    public Examen createExamenAndAffectToMatiere(Long matiereId, String nomExamen ,Integer orderExamen) throws IOException ;
 
 
     public Examen fetchExamenById(Long idExamen);
-    public Examen editExamen(Long examenId, String nomExamen) throws IOException;
+    public Examen editExamen(Long examenId, String nomExamen,Integer orderExamen) throws IOException;
 }

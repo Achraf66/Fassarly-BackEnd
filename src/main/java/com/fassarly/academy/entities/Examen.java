@@ -23,6 +23,10 @@ public class Examen implements Serializable {
 
     String nomExamen;
 
+    @Column(name = "order_number")
+    Integer order;
+
+
     //relations
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY) //Chercher en chatGpt ?

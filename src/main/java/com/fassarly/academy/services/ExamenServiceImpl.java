@@ -56,15 +56,11 @@ public class ExamenServiceImpl implements IExamenService {
         Optional<Matiere> matiereOptional = matiereRepository.findById(matiereId);
 
         if (matiereOptional.isPresent()) {
-            Matiere matiere = matiereOptional.get();
             List<Examen> examens = examenRepository.findExamenByMatieresId(matiereId);
 
             // Assuming you have a specific criterion for sorting (e.g., by ID).
             // Replace "Comparator.comparing(Examen::getId)" with your desired criterion.
-            Comparator<Examen> comparator = Comparator.comparing(Examen::getId);
-
-            examens.sort(comparator);
-
+            examens.sort(Comparator.comparing(Examen::getOrder));
             // Make your modifications to the list here.
             // For example, modify an element without changing the order.
 
@@ -84,7 +80,7 @@ public class ExamenServiceImpl implements IExamenService {
 
 
     @Override
-    public Examen editExamen(Long examenId, String nomExamen) throws IOException {
+    public Examen editExamen(Long examenId, String nomExamen , Integer orderExamen) throws IOException {
 
         Examen examen = examenRepository.findById(examenId).orElse(null);
 
@@ -96,6 +92,7 @@ public class ExamenServiceImpl implements IExamenService {
         // Update examen details
         examen.setNomExamen(nomExamen);
 
+        examen.setOrder(orderExamen);
 
         // Save the updated examen
         examenRepository.save(examen);
@@ -104,7 +101,7 @@ public class ExamenServiceImpl implements IExamenService {
     }
 
     @Transactional
-    public Examen createExamenAndAffectToMatiere(Long matiereId, String nomExamen) throws IOException {
+    public Examen createExamenAndAffectToMatiere(Long matiereId, String nomExamen,Integer orderExamen) throws IOException {
 
         Matiere matiere = matiereRepository.findById(matiereId).orElse(null);
 
@@ -115,6 +112,7 @@ public class ExamenServiceImpl implements IExamenService {
 
         Examen examen = new Examen();
         examen.setNomExamen(nomExamen);
+        examen.setOrder(orderExamen);
         examenRepository.save(examen);
 
         examen.setMatieres(matiere);

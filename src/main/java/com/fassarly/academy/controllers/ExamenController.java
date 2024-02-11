@@ -98,15 +98,18 @@ public class ExamenController {
 
     }
 
-    @PostMapping("/create")
+    @PostMapping("/create/{orderExamen}")
     public ResponseEntity<Examen> createExamenAndAffectToMatiere(
             @RequestParam("matiereId") Long matiereId,
+            @PathVariable("orderExamen") Integer orderExamen,
             @RequestParam("nomExamen") String nomExamen) {
 
         try {
             Examen examen = examenService.createExamenAndAffectToMatiere(
                     matiereId,
-                    nomExamen);
+                    nomExamen,
+                    orderExamen
+            );
             return ResponseEntity.ok(examen);
         } catch (IOException e) {
             e.printStackTrace();
@@ -120,12 +123,14 @@ public class ExamenController {
         return examenService.fetchExamenById(idExamen);
     }
 
-    @PutMapping("/edit/{examenId}")
+    @PutMapping("/edit/{examenId}/{orderExamen}")
     public ResponseEntity<Examen> editExamen(
             @PathVariable Long examenId,
-            @RequestParam String nomExamen) {
+            @PathVariable("orderExamen") Integer orderExamen,
+            @RequestParam String nomExamen
+    ) {
         try {
-            Examen updatedExamen = examenService.editExamen(examenId, nomExamen);
+            Examen updatedExamen = examenService.editExamen(examenId, nomExamen,orderExamen);
             return ResponseEntity.ok(updatedExamen);
         } catch (IOException e) {
             return ResponseEntity.status(500).body(null);
