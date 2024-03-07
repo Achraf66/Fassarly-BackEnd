@@ -22,6 +22,9 @@ public class Theme implements Serializable {
 
     String nomTheme;
 
+    @Column(name = "order_number")
+    Integer order;
+
     //relations
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)

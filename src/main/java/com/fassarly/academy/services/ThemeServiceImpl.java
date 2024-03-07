@@ -9,9 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -55,9 +53,21 @@ public class ThemeServiceImpl implements IThemeService {
 
     @Override
     public List<Theme> findThemeByMatieresId(Long matiereId) {
-        List<Theme> themes = themeRepository.findThemeByMatieresId(matiereId);
-        themes.sort(Comparator.comparingLong(Theme::getId));
-        return themes;
+        // Null check for matiereId
+        Objects.requireNonNull(matiereId, "Matiere ID cannot be null");
+
+        try {
+            List<Theme> themes = themeRepository.findThemeByMatieresId(matiereId);
+
+            // Sorting the themes based on order
+            themes.sort(Comparator.comparingLong(Theme::getOrder));
+
+            // Returning an immutable list to prevent modification outside this method
+            return Collections.unmodifiableList(themes);
+        } catch (Exception ex) {
+            // Handle exceptions gracefully
+            return Collections.emptyList(); // Or handle the error according to your application's needs
+        }
     }
 
 
@@ -67,12 +77,13 @@ public class ThemeServiceImpl implements IThemeService {
     }
 
     @Override
-    public Theme updateThemeNameById(String newThemeName, Long idTheme) {
+    public Theme updateThemeNameById(Integer order, String newThemeName, Long idTheme) {
         Optional<Theme> optionalTheme = themeRepository.findById(idTheme);
 
         if (optionalTheme.isPresent()) {
             Theme theme = optionalTheme.get();
             theme.setNomTheme(newThemeName);
+            theme.setOrder(order);
             return themeRepository.save(theme);
         } else {
             return null;

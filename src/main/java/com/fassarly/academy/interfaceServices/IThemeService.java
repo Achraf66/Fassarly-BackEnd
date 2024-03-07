@@ -28,7 +28,7 @@ public interface IThemeService {
     List<Theme> findThemesSearchInMatiere(String searchTerm,Long matiereId);
 
     /**************************Update Themename By Id*****************/
-    public Theme updateThemeNameById(String newThemeName , Long idTheme);
+    public Theme updateThemeNameById(Integer order , String newThemeName , Long idTheme);
 
     /******************************Find Theme By Id ********************/
     public Theme findThemeById(Long idTheme);

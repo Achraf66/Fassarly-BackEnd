@@ -122,8 +122,8 @@ public class ThemeController {
     }
 
     @PutMapping("/updateNameThemeById/{id}")
-    public ResponseEntity<Theme> updateThemeNameById(@PathVariable Long id, @RequestParam String newThemeName) {
-        Theme updatedTheme = themeService.updateThemeNameById(newThemeName, id);
+    public ResponseEntity<Theme> updateThemeNameById(@PathVariable Long id, @RequestParam String newThemeName,@RequestParam Integer order) {
+        Theme updatedTheme = themeService.updateThemeNameById(order,newThemeName, id);
         return ResponseEntity.ok(updatedTheme);
     }
 
