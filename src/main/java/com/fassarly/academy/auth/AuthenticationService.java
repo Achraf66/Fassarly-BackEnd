@@ -105,12 +105,12 @@ public class AuthenticationService {
                     .orElse(null);
 
             // Check if user already has an active token
-            List<Token> userTokens = tokenRepository.findTokenByUser(user);
-            if (!userTokens.isEmpty()) {
-                return AuthenticationResponse.builder()
-                        .errormessage("User Already logged in on another device")
-                        .build();
-            }
+//            List<Token> userTokens = tokenRepository.findTokenByUser(user);
+//            if (!userTokens.isEmpty()) {
+//                return AuthenticationResponse.builder()
+//                        .errormessage("User Already logged in on another device")
+//                        .build();
+//            }
 
 
             if (!Boolean.TRUE.equals(user.isSmsVerified())) {
