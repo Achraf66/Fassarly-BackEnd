@@ -23,6 +23,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.text.SimpleDateFormat;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -45,6 +46,12 @@ public class AuthenticationService {
     @Value("${application.security.jwt.expiration}")
     private long jwtExpiration;
 
+
+    @Value("${Sender}")
+    private  String SENDER;
+
+    @Value("${SmsApiKey}")
+    private String SMSAPIKEY;
 
 
     @Transactional
@@ -69,13 +76,29 @@ public class AuthenticationService {
             user.setVerificationCode(verificationCode);
             user.setSmsVerified(false);
 
-            sendVerificationSms(user.getNumeroTel(), verificationCode);
+            SmsRequest smsRequest = new SmsRequest();
+            // Set the current date
+            Date currentDate = new Date();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            String formattedDate = dateFormat.format(currentDate);
+            smsRequest.setDate(formattedDate);
+
+            // Set the current time
+            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+            String formattedTime = timeFormat.format(currentDate);
+            smsRequest.setHeure(formattedTime);
+
+            smsRequest.setSender(SENDER);
+            smsRequest.setApiKey(SMSAPIKEY);
+            smsRequest.setMobileNumber("216"+user.getNumeroTel());
+            smsRequest.setSmsContent("Merci d'avoir souscrit à Fassarly. Voici votre code :\n" + verificationCode);
+
+            OrangeSmsService.sendSms(smsRequest);
 
             repository.save(user);
 
             var jwtToken = jwtService.GenerateToken(user.getNumeroTel());
             var refreshToken = jwtService.GenerateToken(user.getNumeroTel());
-            // saveUserToken(savedUser, jwtToken);
 
             return AuthenticationResponse.builder()
                     .successmessage("Register Success")
@@ -231,29 +254,12 @@ public class AuthenticationService {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public static String generateRandomCode() {
         Random random = new Random();
         int code = 10000 + random.nextInt(90000); // Random number in the range [10000, 99999]
         return String.valueOf(code);
     }
 
-    private void sendVerificationSms(String phoneNumber, String verificationCode) {
-        SmsRequest smsRequest = SmsRequest.builder().number(phoneNumber).message(verificationCode).build();
-        OrangeSmsService.sendSms(smsRequest);
-    }
+
 
 }
