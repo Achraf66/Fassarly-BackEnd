@@ -20,11 +20,17 @@ public class Offer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    Float mensuelle;
+    Float recordYear;
 
-    Float trimestrielle;
+    Float recordRestOfYear;
 
-    Float anuelle;
+    Float recordMonth;
+
+    Float liveYear;
+
+    Float liveRestOfYear;
+
+    Float liveMonth;
 
 
 

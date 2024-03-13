@@ -44,9 +44,14 @@ public class OfferServiceImpl {
                     .map(existingOffer -> {
                         // If it exists, update the existing offer
                         // Update fields you want to change
-                        existingOffer.setMensuelle(offer.getMensuelle());
-                        existingOffer.setTrimestrielle(offer.getTrimestrielle());
-                        existingOffer.setAnuelle(offer.getAnuelle());
+                        existingOffer.setRecordYear(offer.getRecordYear());
+                        existingOffer.setRecordMonth(offer.getRecordMonth());
+                        existingOffer.setRecordRestOfYear(offer.getRecordRestOfYear());
+
+                        existingOffer.setLiveMonth(offer.getLiveMonth());
+                        existingOffer.setLiveRestOfYear(offer.getLiveRestOfYear());
+                        existingOffer.setLiveYear(offer.getLiveYear());
+
                         return offerRepository.save(existingOffer);
                     })
                     .orElseGet(() -> {
