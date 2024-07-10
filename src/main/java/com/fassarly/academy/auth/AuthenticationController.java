@@ -50,5 +50,17 @@ public class AuthenticationController {
                             .build());
         }
     }
-
+    @PostMapping("/reSendCodeVerification")
+    public ResponseEntity<AuthenticationResponse> reSendVerificationCode(@RequestParam("numTel") String numTel) {
+        try {
+            AuthenticationResponse response = service.reSendVerificationCode(numTel);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(AuthenticationResponse.builder()
+                            .errormessage("An error occurred during SMS verification.")
+                            .build());
+        }
+    }
 }

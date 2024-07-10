@@ -53,66 +53,70 @@ public class AuthenticationService {
     @Value("${SmsApiKey}")
     private String SMSAPIKEY;
 
-
     @Transactional
     public AuthenticationResponse register(RegisterRequest request) {
         try {
-            Set<UserRole> existingRoles = getExistingRoles(request.getRoles().stream()
-                    .map(UserRole::getName)
-                    .collect(Collectors.toSet()));
 
+            // Check if the phone number already exists
+            if (repository.existsByNumeroTel(request.getNumTel())) {
+                return AuthenticationResponse.builder()
+                        .errormessage("Phone number is already registered.")
+                        .build();
+            }
+
+            // Fetch existing roles based on requested roles
             Set<String> requestedRoleNames = request.getRoles().stream()
                     .map(UserRole::getName)
                     .collect(Collectors.toSet());
 
+            Set<UserRole> existingRoles = getExistingRoles(requestedRoleNames);
+
+            // Validate roles
             if (!existingRoles.stream().map(UserRole::getName).toList().containsAll(requestedRoleNames)) {
                 return AuthenticationResponse.builder()
                         .errormessage("Some roles are not valid.")
                         .build();
             }
 
+            // Create the User
             var user = buildUser(request, existingRoles);
             String verificationCode = generateRandomCode();
             user.setVerificationCode(verificationCode);
             user.setSmsVerified(false);
 
+            // Prepare SMS request
             SmsRequest smsRequest = new SmsRequest();
-            // Set the current date
             Date currentDate = new Date();
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-            String formattedDate = dateFormat.format(currentDate);
-            smsRequest.setDate(formattedDate);
-
-            // Set the current time
             SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-            String formattedTime = timeFormat.format(currentDate);
-            smsRequest.setHeure(formattedTime);
 
+            smsRequest.setDate(dateFormat.format(currentDate));
+            smsRequest.setHeure(timeFormat.format(currentDate));
             smsRequest.setSender(SENDER);
             smsRequest.setApiKey(SMSAPIKEY);
-            smsRequest.setMobileNumber("216"+user.getNumeroTel());
+            smsRequest.setMobileNumber("216" + user.getNumeroTel());
             smsRequest.setSmsContent("Merci d'avoir souscrit à Fassarly. Voici votre code :\n" + verificationCode);
 
-            OrangeSmsService.sendSms(smsRequest);
+            // Uncomment to send SMS
+            // OrangeSmsService.sendSms(smsRequest);
+
+            // Save user
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String dateWithTime = formatter.format(new Date());
+            user.setDateCreation(dateWithTime);
 
             repository.save(user);
-
-            var jwtToken = jwtService.GenerateToken(user.getNumeroTel());
-            var refreshToken = jwtService.GenerateToken(user.getNumeroTel());
 
             return AuthenticationResponse.builder()
                     .successmessage("Register Success")
                     .build();
         } catch (Exception e) {
-            // Log the exception or handle it appropriately
             e.printStackTrace();
             return AuthenticationResponse.builder()
                     .errormessage("An error occurred during registration.")
                     .build();
         }
     }
-
-
 
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -162,6 +166,62 @@ public class AuthenticationService {
         }
     }
 
+
+    @Transactional
+    public AuthenticationResponse reSendVerificationCode(String numTel) {
+        try {
+            // Check if the user exists
+            Optional<AppUser> userOptional = repository.findByNumeroTel(numTel);
+            if (userOptional.isEmpty()) {
+                return AuthenticationResponse.builder()
+                        .errormessage("This user does not exist.")
+                        .build();
+            }
+
+            AppUser user = userOptional.get();
+
+            // Check if user is already verified
+            if (user.isSmsVerified()) {
+                return AuthenticationResponse.builder()
+                        .errormessage("This user is already verified.")
+                        .build();
+            }
+
+            // Generate new verification code
+            String verificationCode = generateRandomCode();
+            user.setVerificationCode(verificationCode);
+            user.setSmsVerified(false);
+
+            // Prepare and send SMS
+            SmsRequest smsRequest = new SmsRequest();
+            Date currentDate = new Date();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+
+            smsRequest.setDate(dateFormat.format(currentDate));
+            smsRequest.setHeure(timeFormat.format(currentDate));
+            smsRequest.setSender(SENDER);
+            smsRequest.setApiKey(SMSAPIKEY);
+            smsRequest.setMobileNumber("216" + user.getNumeroTel());
+            smsRequest.setSmsContent("Merci d'avoir souscrit à Fassarly. Voici votre code :\n" + verificationCode);
+
+            // Uncomment to send SMS
+//             OrangeSmsService.sendSms(smsRequest);
+
+            // Save user
+            repository.save(user);
+
+            return AuthenticationResponse.builder()
+                    .successmessage("Verification code resent successfully.")
+                    .build();
+        } catch (Exception e) {
+            // Log the exception or handle it appropriately
+            e.printStackTrace();
+            return AuthenticationResponse.builder()
+                    .errormessage("An error occurred while resending verification code.")
+                    .build();
+        }
+    }
 
     public AuthenticationResponse logout(String username) {
         try {
@@ -225,13 +285,23 @@ public class AuthenticationService {
             if (optionalUser.isPresent()) {
                 AppUser user = optionalUser.get();
 
+                if (user.isSmsVerified()) {
+                    // User is already verified
+                    return AuthenticationResponse.builder()
+                            .errormessage("User is already verified.")
+                            .build();
+                }
+
                 if (enteredCode.equals(user.getVerificationCode())) {
                     // Verification code matches, update smsVerified to true
                     user.setSmsVerified(true);
                     repository.save(user);
+                    var accessToken = jwtService.GenerateToken(user.getNumeroTel());
+                    saveUserToken(user, accessToken);
 
                     return AuthenticationResponse.builder()
                             .successmessage("Verification successful. SMS is now verified.")
+                            .accessToken(accessToken)
                             .build();
                 } else {
                     return AuthenticationResponse.builder()
@@ -240,7 +310,7 @@ public class AuthenticationService {
                 }
             } else {
                 return AuthenticationResponse.builder()
-                        .errormessage("User not found for phone number")
+                        .errormessage("User not found for phone number.")
                         .build();
             }
         } catch (Exception e) {
@@ -251,8 +321,6 @@ public class AuthenticationService {
                     .build();
         }
     }
-
-
 
     public static String generateRandomCode() {
         Random random = new Random();

@@ -37,7 +37,7 @@ public class AppUser implements Serializable {
 
     private boolean isSmsVerified;
 
-//    private Date dateCreation;
+    private String dateCreation;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<UserRole> roles = new HashSet<>();
