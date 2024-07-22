@@ -111,10 +111,12 @@ public class UtilisateurController {
             @RequestParam(required = false) String password,
             @RequestParam String nomPrenom,
             @RequestParam String numeroTel,
+            @RequestParam Boolean smsVerified,
+            @RequestParam Boolean accountActivated,
             @RequestParam(required = false) MultipartFile photoFile,
             @RequestParam(required = false) Long roleId){
         try {
-            AppUser updatedUser = utilisateurService.updateUserById(userId, password, nomPrenom, numeroTel, photoFile,roleId);
+            AppUser updatedUser = utilisateurService.updateUserById(userId, password, nomPrenom, numeroTel, photoFile,roleId,smsVerified,accountActivated);
             if (updatedUser != null) {
                 return ResponseEntity.ok(updatedUser);
             } else {

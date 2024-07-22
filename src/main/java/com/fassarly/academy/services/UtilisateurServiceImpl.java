@@ -86,53 +86,37 @@ public class UtilisateurServiceImpl implements IUtilisateurService {
 
     public AppUser updateUserById(
             Long userId, String password, String nomPrenom, String numeroTel,
-            MultipartFile photoFile, Long roleId
+            MultipartFile photoFile, Long roleId,Boolean smsVerified,
+            Boolean accountActivated
     ) throws IOException {
         Optional<AppUser> appUserOptional = appUserRepository.findById(userId);
 
         if (appUserOptional.isEmpty()) {
             return null;
         }
-
         AppUser appUser = appUserOptional.get();
         appUser.setNomPrenom(nomPrenom);
         appUser.setNumeroTel(numeroTel);
-
-        // If roleId is provided, update the user's role
+        appUser.setSmsVerified(smsVerified);
+        appUser.setAccountActivated(accountActivated);
         if (roleId != null) {
-            // Find the UserRole based on roleId
             Optional<UserRole> roleOptional = roleRepository.findById(roleId);
-
-            // Check if the role exists
             if (roleOptional.isPresent()) {
-                // Create a new HashSet and add the found role
                 Set<UserRole> updatedRoles = new HashSet<>();
                 updatedRoles.add(roleOptional.get());
-
-                // Set the user's roles to the new set
                 appUser.setRoles(updatedRoles);
             } else {
-                // Handle the case where the specified role does not exist
-                // You can throw an exception, log an error, or handle it based on your requirements
                 throw new RuntimeException("Role with ID " + roleId + " not found");
             }
         }
-
-        // Update password if provided
         if (password != null) {
             appUser.setPassword(passwordEncoder.encode(password));
         }
-
-        // Update photo if provided
         if (photoFile != null) {
-                // Upload examFile to Azure Blob Storage
                 String blobDirectoryPath = "Users/" + appUser.getId() + "/";
-                // Upload examFile to Azure Blob Storage
                 azureBlobStorageService.uploadBlob(blobDirectoryPath, photoFile);
                 appUser.setPhoto(azureBlobStorageService.getBlobUrl(blobDirectoryPath, photoFile.getOriginalFilename()));
         }
-
-
         return appUserRepository.save(appUser);
     }
 

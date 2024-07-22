@@ -104,6 +104,7 @@ public class AuthenticationService {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String dateWithTime = formatter.format(new Date());
             user.setDateCreation(dateWithTime);
+            user.setAccountActivated(true);
 
             repository.save(user);
 
@@ -146,10 +147,21 @@ public class AuthenticationService {
                         .build();
             }
 
+            if (!Boolean.TRUE.equals(user.isAccountActivated())) {
+                return AuthenticationResponse.builder()
+                        .errormessage("This User disabled by Admin")
+                        .build();
+            }
+
+            jwtService.deleteAllUserTokens(user);
+
             var accessToken = jwtService.GenerateToken(request.getNumtel());
+
             saveUserToken(user, accessToken);
 
-            return AuthenticationResponse.builder()
+            return
+
+                    AuthenticationResponse.builder()
                     .accessToken(accessToken)
                     .successmessage("Sucess login")
 //                .refreshToken(refreshToken)

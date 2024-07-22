@@ -16,4 +16,6 @@ public interface AppUserRepository extends JpaRepository<AppUser, Long> {
 
     List<AppUser> findByNomPrenomContainingIgnoreCaseOrNumeroTelContainingIgnoreCaseOrRolesDisplayNameContainingIgnoreCase(String nomPrenom, String numeroTel, String displayName);
 
+    List<AppUser> findByRolesNameContaining(String roleName);
+
 }

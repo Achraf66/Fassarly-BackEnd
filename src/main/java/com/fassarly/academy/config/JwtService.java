@@ -15,10 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
@@ -72,7 +69,10 @@ public class JwtService {
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-
+    public Boolean isTokenRevoked(String token) {
+        Optional<Token> storedToken = tokenRepository.findByToken(token);
+        return storedToken.map(Token::isRevoked).orElse(true);
+    }
 
     public String GenerateToken(String username){
         Map<String, Object> claims = new HashMap<>();
@@ -104,13 +104,12 @@ public class JwtService {
         }
     }
 
-
-
-
-
-
-
-
-
+    public void revokeToken(String token) {
+        Optional<Token> storedToken = tokenRepository.findByToken(token);
+        storedToken.ifPresent(t -> {
+            t.setRevoked(true);
+            tokenRepository.save(t);
+        });
+    }
 
 }

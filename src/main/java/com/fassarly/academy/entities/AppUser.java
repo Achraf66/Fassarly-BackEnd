@@ -33,6 +33,9 @@ public class AppUser implements Serializable {
 
     String photo;
 
+    @Column(nullable = false)
+    private boolean accountActivated = false;
+
     private String verificationCode;
 
     private boolean isSmsVerified;
