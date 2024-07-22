@@ -164,7 +164,6 @@ public class AuthenticationService {
                     AuthenticationResponse.builder()
                     .accessToken(accessToken)
                     .successmessage("Sucess login")
-//                .refreshToken(refreshToken)
                     .build();
 
         } catch (BadCredentialsException e) {
@@ -339,7 +338,6 @@ public class AuthenticationService {
         int code = 10000 + random.nextInt(90000); // Random number in the range [10000, 99999]
         return String.valueOf(code);
     }
-
 
 
 }
