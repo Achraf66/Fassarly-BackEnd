@@ -51,7 +51,7 @@ public class UtilisateurServiceImpl implements IUtilisateurService {
     }
     @Override
     public List<AppUser> readAllUtilisateur() {
-        return appUserRepository.findAll();
+        return appUserRepository.findByIsSmsVerifiedTrue();
     }
 
     @Override

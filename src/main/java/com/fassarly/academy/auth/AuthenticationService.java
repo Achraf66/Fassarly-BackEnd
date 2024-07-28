@@ -160,7 +160,6 @@ public class AuthenticationService {
             saveUserToken(user, accessToken);
 
             return
-
                     AuthenticationResponse.builder()
                     .accessToken(accessToken)
                     .successmessage("Sucess login")

@@ -20,10 +20,10 @@ public interface ILessonService {
     public void  deleteLesson(Long id);
     //-----------------------------------CRUD ends-----------------------------------//
 
-    public Lesson createLessonAndAffectToTheme(String nomLesson, String videoLien,String description,List<MultipartFile> piecesJointes,Long idTheme) throws IOException;
+    public Lesson createLessonAndAffectToTheme(String nomLesson, String videoLien,String description,List<MultipartFile> piecesJointes,Long idTheme,Integer order) throws IOException;
 
     public List<Lesson> getLessonsByTheme(Long idTheme);
 
     public Lesson updateLesson(Long lessonId, String nomLesson, String videoLien, String description,
-                               List<MultipartFile> piecesJointes) throws IOException;
-}
+                               List<MultipartFile> piecesJointes,Integer order) throws IOException;
+    }

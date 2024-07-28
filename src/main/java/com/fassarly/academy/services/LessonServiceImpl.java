@@ -13,10 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -60,9 +57,14 @@ public class LessonServiceImpl implements ILessonService {
     }
 
     @Override
-    public Lesson createLessonAndAffectToTheme
-            (String nomLesson, String videoLien, String description,
-             List<MultipartFile> piecesJointes, Long idTheme) throws IOException {
+    public Lesson createLessonAndAffectToTheme(
+            String nomLesson,
+            String videoLien,
+            String description,
+            List<MultipartFile> piecesJointes,
+            Long idTheme,
+            Integer order
+            ) throws IOException {
         Optional<Theme> optionalTheme = themeRepository.findById(idTheme);
         if (optionalTheme.isEmpty()) {
             return null;
@@ -74,6 +76,7 @@ public class LessonServiceImpl implements ILessonService {
             Lesson lesson = new Lesson();
             lesson.setNomLesson(nomLesson);
             lesson.setDescription(description);
+            lesson.setOrder(order);
             lesson.setVideoLien(videoLien);
             lesson.setThemes(theme);
             themeLessons.add(lesson);
@@ -100,8 +103,13 @@ public class LessonServiceImpl implements ILessonService {
 
 
     @Override
-    public Lesson updateLesson(Long lessonId, String nomLesson, String videoLien, String description,
-                               List<MultipartFile> piecesJointes) throws IOException {
+    public Lesson updateLesson
+            (Long lessonId,
+             String nomLesson,
+             String videoLien,
+             String description,
+             List<MultipartFile> piecesJointes,
+             Integer order) throws IOException {
         Optional<Lesson> optionalLesson = lessonRepository.findById(lessonId);
         if (optionalLesson.isEmpty()) {
             return null;
@@ -112,6 +120,7 @@ public class LessonServiceImpl implements ILessonService {
             lesson.setNomLesson(nomLesson);
             lesson.setDescription(description);
             lesson.setVideoLien(videoLien);
+            lesson.setOrder(order);
 
             // Save the updated lesson
             Lesson updatedLesson = lessonRepository.save(lesson);
@@ -138,16 +147,24 @@ public class LessonServiceImpl implements ILessonService {
 
     @Override
     public List<Lesson> getLessonsByTheme(Long idTheme) {
-        Optional<Theme> optionalTheme = themeRepository.findById(idTheme);
-        if (optionalTheme.isEmpty()) {
-            return null;
-        } else {
-            List<Lesson> lessons = lessonRepository.findLessonByThemesId(idTheme);
-            lessons.sort(Comparator.comparingLong(Lesson::getId));
-            return lessons;
-        }
+        Objects.requireNonNull(idTheme, "Theme ID cannot be null");
+        try {
+            Optional<Theme> optionalTheme = themeRepository.findById(idTheme);
+            if (optionalTheme.isEmpty()) {
+                return Collections.emptyList();
+            } else {
+                List<Lesson> lessons = lessonRepository.findLessonByThemesId(idTheme);
 
+                lessons.sort(Comparator.comparingLong(Lesson::getOrder));
+
+                return Collections.unmodifiableList(lessons);
+            }
+
+        } catch (Exception ex) {
+            return Collections.emptyList();
+        }
     }
+
 
 
 }

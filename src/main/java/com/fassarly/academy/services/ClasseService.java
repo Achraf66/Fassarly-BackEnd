@@ -15,7 +15,7 @@ public class ClasseService {
     private final AppUserRepository appUserRepository;
 
     public List<AppUser> findUsersByRole(String roleName) {
-        return appUserRepository.findByRolesNameContaining(roleName);
+        return appUserRepository.findByRolesNameContainingAndIsSmsVerified(roleName,true);
     }
     public AuthenticationResponse desactivateUsers() {
         List<AppUser> users = appUserRepository.findAll();

@@ -16,6 +16,8 @@ public interface AppUserRepository extends JpaRepository<AppUser, Long> {
 
     List<AppUser> findByNomPrenomContainingIgnoreCaseOrNumeroTelContainingIgnoreCaseOrRolesDisplayNameContainingIgnoreCase(String nomPrenom, String numeroTel, String displayName);
 
-    List<AppUser> findByRolesNameContaining(String roleName);
+    List<AppUser> findByRolesNameContainingAndIsSmsVerified(String roleName,boolean smsVerified);
+
+    List<AppUser> findByIsSmsVerifiedTrue();
 
 }

@@ -108,11 +108,16 @@ public class LessonController {
 
     @PostMapping("/createLessonAndAffectToTheme/{idTheme}")
     public ResponseEntity<?> createLessonAndAffectToTheme(
-            @RequestParam("nomLesson") String nomLesson,@RequestParam("videoLien") String videoLien, @RequestParam("description") String description,
-            @RequestParam(value = "piecesJointes",required = false)  List<MultipartFile> piecesJointes, @PathVariable("idTheme") Long idTheme)
+            @RequestParam("nomLesson") String nomLesson,
+            @RequestParam("videoLien") String videoLien,
+            @RequestParam("description") String description,
+            @RequestParam(value = "piecesJointes",required = false)List<MultipartFile> piecesJointes,
+            @PathVariable("idTheme") Long idTheme,
+            @RequestParam("order") Integer order
+            )
     {
         try {
-            lessonService.createLessonAndAffectToTheme(nomLesson, videoLien, description, piecesJointes, idTheme);
+            lessonService.createLessonAndAffectToTheme(nomLesson, videoLien, description, piecesJointes, idTheme,order);
             return ResponseEntity.status(HttpStatus.OK).body("{\"message\": \"Lesson créée avec succès\"}");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.OK).body("{\"error\": \"Une erreur s'est produite\"}");
@@ -131,10 +136,11 @@ public class LessonController {
             @RequestParam String nomLesson,
             @RequestParam String videoLien,
             @RequestParam String description,
+            @RequestParam int order,
             @RequestParam(required = false) List<MultipartFile> piecesJointes
     ) {
         try {
-            Lesson updatedLesson = lessonService.updateLesson(lessonId, nomLesson, videoLien, description, piecesJointes);
+            Lesson updatedLesson = lessonService.updateLesson(lessonId, nomLesson, videoLien, description, piecesJointes,order);
             if (updatedLesson != null) {
                 return ResponseEntity.ok(updatedLesson);
             } else {

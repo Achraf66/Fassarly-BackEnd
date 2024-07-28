@@ -28,6 +28,9 @@ public class Lesson implements Serializable {
     @Column(length = 1000)
     String description;
 
+    @Column(name = "order_number")
+    Integer order;
+
     @ElementCollection
     @CollectionTable(name = "pieces_jointes1", joinColumns = @JoinColumn(name = "id_entite"))
     private List<String> piecesJointes;
