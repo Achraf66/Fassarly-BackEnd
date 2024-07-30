@@ -98,7 +98,7 @@ public class AuthenticationService {
             smsRequest.setSmsContent("Merci d'avoir souscrit à Fassarly. Voici votre code :\n" + verificationCode);
 
             // Uncomment to send SMS
-            // OrangeSmsService.sendSms(smsRequest);
+             OrangeSmsService.sendSms(smsRequest);
 
             // Save user
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -216,7 +216,7 @@ public class AuthenticationService {
             smsRequest.setSmsContent("Merci d'avoir souscrit à Fassarly. Voici votre code :\n" + verificationCode);
 
             // Uncomment to send SMS
-//             OrangeSmsService.sendSms(smsRequest);
+             OrangeSmsService.sendSms(smsRequest);
 
             // Save user
             repository.save(user);
