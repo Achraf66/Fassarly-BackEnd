@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
 import java.io.IOException;
 
 @Component
@@ -42,7 +43,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             if (jwtService.isTokenRevoked(token)) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.sendRedirect("http://localhost:4200/#/auth/login"); // Redirect to the login page
+                response.setContentType("application/json");
+                response.getWriter().write("{\"error\": \"Token has expired or is invalid\"}");
                 return;
             }
 

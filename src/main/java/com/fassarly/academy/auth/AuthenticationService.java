@@ -147,11 +147,11 @@ public class AuthenticationService {
                         .build();
             }
 
-            if (!Boolean.TRUE.equals(user.isAccountActivated())) {
-                return AuthenticationResponse.builder()
-                        .errormessage("This User disabled by Admin")
-                        .build();
-            }
+//            if (!Boolean.TRUE.equals(user.isAccountActivated())) {
+//                return AuthenticationResponse.builder()
+//                        .errormessage("This User disabled by Admin")
+//                        .build();
+//            }
 
             jwtService.deleteAllUserTokens(user);
 
