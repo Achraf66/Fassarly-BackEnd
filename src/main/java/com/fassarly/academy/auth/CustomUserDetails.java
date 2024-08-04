@@ -10,19 +10,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class CustomUserDetails extends AppUser implements UserDetails {
+public class CustomUserDetails implements UserDetails {
 
-    private String numtel;
-    private String password;
-    Collection<? extends GrantedAuthority> authorities;
+    private final String numtel;
+    private final String password;
+    private final Collection<? extends GrantedAuthority> authorities;
 
     public CustomUserDetails(AppUser byUsername) {
         this.numtel = byUsername.getNumeroTel();
-        this.password= byUsername.getPassword();
+        this.password = byUsername.getPassword();
+
         List<GrantedAuthority> auths = new ArrayList<>();
-
-        for(UserRole role : byUsername.getRoles()){
-
+        for (UserRole role : byUsername.getRoles()) {
             auths.add(new SimpleGrantedAuthority(role.getName().toUpperCase()));
         }
         this.authorities = auths;
@@ -61,5 +60,14 @@ public class CustomUserDetails extends AppUser implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public boolean hasRole(String roleName) {
+        for (GrantedAuthority authority : authorities) {
+            if (authority.getAuthority().equals(roleName.toUpperCase())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -20,6 +20,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -74,6 +76,7 @@ public class SecurityConfig {
                                     .requestMatchers("/api/utilisateur/findByNumeroTel/**").authenticated()
                                     .requestMatchers("/api/matiere/findMatiereByUser/**").authenticated()
                                     .requestMatchers(HttpMethod.GET, "/api/offers/**").permitAll()
+
                                     .requestMatchers(HttpMethod.GET, "/api/matiere/**").authenticated()
                                     .requestMatchers(HttpMethod.GET, "/api/examen/**").authenticated()
                                     .requestMatchers(HttpMethod.GET, "/api/lesson/**").authenticated()
@@ -86,47 +89,49 @@ public class SecurityConfig {
 
 
              /********************************************************Admin Apis********************************************************/
-                                    .requestMatchers("/api/offers/**").hasAnyAuthority(new String[]{"ADMIN"})
-                                    .requestMatchers(" /api/comptabilite/**").hasAnyAuthority(new String[]{"ADMIN"})
+                                    .requestMatchers("/api/offers/**").hasAnyAuthority("ADMIN")
+                                    .requestMatchers(" /api/comptabilite/**").hasAnyAuthority("ADMIN")
+                                    .requestMatchers("/api/classe/**").hasAnyAuthority("ADMIN")
 
-                                    .requestMatchers(HttpMethod.POST, "/api/offers/**").hasAnyAuthority(new String[]{"ADMIN"})
-                                    .requestMatchers(HttpMethod.PUT, "/api/offers/**").hasAnyAuthority(new String[]{"ADMIN"})
-                                    .requestMatchers(HttpMethod.DELETE, "/api/offers/**").hasAnyAuthority(new String[]{"ADMIN"})
+                                    .requestMatchers(HttpMethod.POST, "/api/offers/**").hasAnyAuthority("ADMIN")
+                                    .requestMatchers(HttpMethod.PUT, "/api/offers/**").hasAnyAuthority("ADMIN")
+                                    .requestMatchers(HttpMethod.DELETE, "/api/offers/**").hasAnyAuthority("ADMIN")
 
-                                    .requestMatchers(HttpMethod.POST, "/api/matiere/**").hasAnyAuthority(new String[]{"ADMIN"})
-                                    .requestMatchers(HttpMethod.PUT, "/api/matiere/**").hasAnyAuthority(new String[]{"ADMIN"})
-                                    .requestMatchers(HttpMethod.DELETE, "/api/matiere/**").hasAnyAuthority(new String[]{"ADMIN"})
-
-
-                                    .requestMatchers(HttpMethod.POST, "/api/examen/**").hasAnyAuthority(new String[]{"ADMIN"})
-                                    .requestMatchers(HttpMethod.PUT, "/api/examen/**").hasAnyAuthority(new String[]{"ADMIN"})
-                                    .requestMatchers(HttpMethod.DELETE, "/api/examen/**").hasAnyAuthority(new String[]{"ADMIN"})
+                                    .requestMatchers(HttpMethod.POST, "/api/matiere/**").hasAnyAuthority("HELPADMIN","ADMIN")
+                                    .requestMatchers(HttpMethod.PUT, "/api/matiere/**").hasAnyAuthority("HELPADMIN","ADMIN")
+                                    .requestMatchers(HttpMethod.DELETE, "/api/matiere/**").hasAnyAuthority("ADMIN")
 
 
-                                    .requestMatchers(HttpMethod.POST, "/api/lesson/**").hasAnyAuthority(new String[]{"ADMIN"})
-                                    .requestMatchers(HttpMethod.PUT, "/api/lesson/**").hasAnyAuthority(new String[]{"ADMIN"})
-                                    .requestMatchers(HttpMethod.DELETE, "/api/lesson/**").hasAnyAuthority(new String[]{"ADMIN"})
+                                    .requestMatchers(HttpMethod.POST, "/api/examen/**").hasAnyAuthority("HELPADMIN","ADMIN")
+                                    .requestMatchers(HttpMethod.PUT, "/api/examen/**").hasAnyAuthority("HELPADMIN","ADMIN")
+                                    .requestMatchers(HttpMethod.DELETE, "/api/examen/**").hasAnyAuthority("ADMIN")
 
 
-                                    .requestMatchers(HttpMethod.POST, "/api/prototypeExam/**").hasAnyAuthority(new String[]{"ADMIN"})
-                                    .requestMatchers(HttpMethod.PUT, "/api/prototypeExam/**").hasAnyAuthority(new String[]{"ADMIN"})
-                                    .requestMatchers(HttpMethod.DELETE, "/api/prototypeExam/**").hasAnyAuthority(new String[]{"ADMIN"})
-
-                                    .requestMatchers(HttpMethod.POST, "/api/seanceEnLigne/**").hasAnyAuthority(new String[]{"ADMIN"})
-                                    .requestMatchers(HttpMethod.PUT, "/api/seanceEnLigne/**").hasAnyAuthority(new String[]{"ADMIN"})
-                                    .requestMatchers(HttpMethod.DELETE, "/api/seanceEnLigne/**").hasAnyAuthority(new String[]{"ADMIN"})
+                                    .requestMatchers(HttpMethod.POST, "/api/lesson/**").hasAnyAuthority("HELPADMIN","ADMIN")
+                                    .requestMatchers(HttpMethod.PUT, "/api/lesson/**").hasAnyAuthority("HELPADMIN","ADMIN")
+                                    .requestMatchers(HttpMethod.DELETE, "/api/lesson/**").hasAnyAuthority("ADMIN")
 
 
-                                    .requestMatchers(HttpMethod.POST, "/api/theme/**").hasAnyAuthority(new String[]{"ADMIN"})
-                                    .requestMatchers(HttpMethod.PUT, "/api/theme/**").hasAnyAuthority(new String[]{"ADMIN"})
-                                    .requestMatchers(HttpMethod.DELETE, "/api/theme/**").hasAnyAuthority(new String[]{"ADMIN"})
+                                    .requestMatchers(HttpMethod.POST, "/api/prototypeExam/**").hasAnyAuthority("HELPADMIN","ADMIN")
+                                    .requestMatchers(HttpMethod.PUT, "/api/prototypeExam/**").hasAnyAuthority("HELPADMIN","ADMIN")
+                                    .requestMatchers(HttpMethod.DELETE, "/api/prototypeExam/**").hasAnyAuthority("ADMIN")
 
-                                    .requestMatchers(HttpMethod.POST, "/api/utilisateur/**").hasAnyAuthority(new String[]{"ADMIN"})
-                                    .requestMatchers(HttpMethod.DELETE, "/api/utilisateur/**").hasAnyAuthority(new String[]{"ADMIN"})
+                                    .requestMatchers(HttpMethod.POST, "/api/seanceEnLigne/**").hasAnyAuthority("HELPADMIN","ADMIN")
+                                    .requestMatchers(HttpMethod.PUT, "/api/seanceEnLigne/**").hasAnyAuthority("HELPADMIN","ADMIN")
+                                    .requestMatchers(HttpMethod.DELETE, "/api/seanceEnLigne/**").hasAnyAuthority("ADMIN")
+
+
+                                    .requestMatchers(HttpMethod.POST, "/api/theme/**").hasAnyAuthority("HELPADMIN","ADMIN")
+                                    .requestMatchers(HttpMethod.PUT, "/api/theme/**").hasAnyAuthority("HELPADMIN","ADMIN")
+                                    .requestMatchers(HttpMethod.DELETE, "/api/theme/**").hasAnyAuthority("ADMIN")
+
+                                    .requestMatchers(HttpMethod.POST, "/api/utilisateur/**").hasAnyAuthority("ADMIN")
+                                    .requestMatchers(HttpMethod.DELETE, "/api/utilisateur/**").hasAnyAuthority("ADMIN")
+
 
                                     .anyRequest().authenticated()
                     )
-                    .sessionManagement(session -> session.maximumSessions(1))
+                    .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                     .authenticationProvider(authenticationProvider())
                     .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 

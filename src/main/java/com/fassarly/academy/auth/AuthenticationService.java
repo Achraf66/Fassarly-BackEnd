@@ -99,7 +99,6 @@ public class AuthenticationService {
 
             // Uncomment to send SMS
              OrangeSmsService.sendSms(smsRequest);
-
             // Save user
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String dateWithTime = formatter.format(new Date());
@@ -217,7 +216,6 @@ public class AuthenticationService {
 
             // Uncomment to send SMS
              OrangeSmsService.sendSms(smsRequest);
-
             // Save user
             repository.save(user);
 
